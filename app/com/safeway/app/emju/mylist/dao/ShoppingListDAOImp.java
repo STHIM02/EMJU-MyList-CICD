@@ -7,6 +7,9 @@ import com.safeway.app.emju.logging.LoggerFactory;
 
 import com.datastax.driver.mapping.Result;
 import com.google.inject.Inject;
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.mapping.MappingManager;
 import com.safeway.app.emju.dao.connector.CassandraConnector;
@@ -83,15 +86,17 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
 			Long householdId = Long.valueOf(shoppingListVO.getHeaderVO().getSwyhouseholdid());
 			String shoppingListNm = GenericConstants.DEFAULT_SHOPPING_LIST;
 			
-			LOGGER.debug("Creating MappingManager");
-			MappingManager manager = connector.getMappingManager();
-			LOGGER.debug("Creating ShoppingListAccessor");
-			ShoppingListAccessor accessor = manager.createAccessor(ShoppingListAccessor.class);
-			Result<ShoppingListItem> result = null;
-			
+			String sql = "SELECT * FROM emju.mylist_items WHERE retail_customer_id = ? AND household_id = ? "
+			        + "AND shopping_list_nm = ?";
+			LOGGER.debug("Query to execute: " + sql);
+
+            PreparedStatement select = connector.getSession().prepare(sql);
+            BoundStatement boundStatement = new BoundStatement(select);
+            
 			LOGGER.debug("Accessing database records with params custGUID " + custGUID + ", " +
-			"householdId " + householdId + ", shoppingListNm " + shoppingListNm);
-			result = accessor.getShoppingListItems(custGUID, householdId, shoppingListNm);
+					"householdId " + householdId + ", shoppingListNm " + shoppingListNm);
+            ResultSet rs = connector.getSession().execute(boundStatement.bind(custGUID, householdId, shoppingListNm));
+            Result<ShoppingListItem> result = connector.getMappingManager().mapper(ShoppingListItem.class).map(rs);
 			
 			shoppingList = result.all();
 			LOGGER.debug("number of records retrieved by acessor: " + shoppingList.size());
