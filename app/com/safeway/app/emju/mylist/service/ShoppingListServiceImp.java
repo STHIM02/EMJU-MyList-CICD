@@ -336,12 +336,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 			if (ValidationHelper.isNonEmpty(shoppingList.getItems())) {
 
-//				List<ShoppingListItemVO> items = shoppingList.getItems();
-//				slNotification.setGroups(orderShoppingListForEmail(items, mailListVO));
-//				slNotification.setBannerId(headerVO.getBannner());
-//				slNotification.setStoreAddress(getStoreAdress(ycsStoreId));
-//				LOGGER.info("before dispatchShoppingList");
-//				emailBroker.sendEmail(slNotification, EmailType.SHOPPING_LIST);
 				EmailDispatcher dispatcher = new EmailDispatcher(shoppingList.getItems(), 
 						mailListVO, headerVO, slNotification, ycsStoreId);
 				Executor executor = Executors.newSingleThreadExecutor();
