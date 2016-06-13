@@ -208,8 +208,18 @@ public class ShoppingListServiceImp implements ShoppingListService {
 				LOGGER.info("Got shoppingListItemsMap");
 			}
 
+			long startTime = System.currentTimeMillis();
+			
 			processShoppingList(shoppingListItems, shoppingListItemsMap, redeemedOfferList, itemIdsList,
 					hasItemIdFilter, versionValues, fromTime, deletedItems, Integer.valueOf(ycsStoreId));
+			
+			long endTime = System.currentTimeMillis();
+			
+			if((endTime - startTime) > 1000) {
+				
+				LOGGER.error("processShoppingList method took " + (endTime - startTime) + " milliseconds "
+						+ "to process " + shoppingListItems.size() + " shopping list items");
+			}
 
 			List<ShoppingListItemVO> newSLItemVoSet = new ArrayList<ShoppingListItemVO>();
 
