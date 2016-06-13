@@ -48,7 +48,8 @@ public class PDDetailsProvider extends OFRDetailsProvider<OfferDetail> {
 	
 				Long offerId = entry.getKey();
 				OfferDetail offerDetail = entry.getValue();
-				if(currClientDate.after(offerDetail.getOfferEffectiveEndDt())) {
+				if(offerDetail.getOfferEffectiveEndDt() == null || 
+						currClientDate.after(offerDetail.getOfferEffectiveEndDt())) {
 					continue;
 				}
 				
