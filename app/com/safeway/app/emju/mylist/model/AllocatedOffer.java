@@ -2,11 +2,13 @@ package com.safeway.app.emju.mylist.model;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.safeway.app.emju.cache.entity.OfferDetail;
 
+@JsonIgnoreProperties({"offerInfo"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AllocatedOffer {
 	
@@ -20,6 +22,7 @@ public class AllocatedOffer {
 	private Long clipId;
 	private Map<String, String[]> hierarchies;
 	private final AllocatedOfferDetail offerDetail = new AllocatedOfferDetail();
+	private OfferDetail offerInfo;
     private String extlOfferId;
     private String purchaseInd;
     private String categoryName;
@@ -110,6 +113,12 @@ public class AllocatedOffer {
 
 	public AllocatedOfferDetail getOfferDetail() {
 		return offerDetail;
+	}
+	public OfferDetail getOfferInfo() {
+		return offerInfo;
+	}
+	public void setOfferInfo(OfferDetail offerInfo) {
+		this.offerInfo = offerInfo;
 	}
 	public String getExtlOfferId() {
 		return extlOfferId;

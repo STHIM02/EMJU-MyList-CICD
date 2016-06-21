@@ -491,6 +491,7 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 			validOfferIds.add(offerId);
 			offer = new AllocatedOffer();
 			offerMap.put(offerId, offer);
+			offer.setOfferInfo(offerDetail);
 			offer.setOfferId(offerId);
 			offer.setOfferPgm(offerDetail.getOfferProgramCd());
 			offer.setClipStatus(ClipStatus.UNCLIPPED);
@@ -540,7 +541,8 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 
 			offer = new AllocatedOffer();
 			offer.setOfferId(offerId);
-
+			
+			offer.setOfferInfo(offerDetail);
 			offer.setOfferStartDt(displayStartDate);
 			offer.setClipStatus(ClipStatus.UNCLIPPED);
 			offer.setPurchaseInd("B");
