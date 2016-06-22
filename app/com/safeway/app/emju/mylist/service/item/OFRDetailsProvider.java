@@ -42,6 +42,7 @@ public abstract class OFRDetailsProvider<T> implements ItemDetailsProvider<T> {
 
 		if (Constants.YES.equalsIgnoreCase(details)) {
 			
+			shoppingListItemVO.setOfferDetail(offerDetail);
 			shoppingListItemVO.setAddedDate("");
 			shoppingListItemVO.setStartDate("");
 			shoppingListItemVO.setEndDate("");
