@@ -614,7 +614,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 					typedOffers = offers.get(itemTypeCode);
 					if (ValidationHelper.isNonEmpty(typedOffers)) {
 						for (Iterator<AllocatedOffer> iter = typedOffers.listIterator(); iter.hasNext();) {
-							if (itemsMap.containsKey(iter.next().getOfferId())) {
+							if (itemsMap.containsKey(iter.next().getOfferId().toString())) {
 								iter.remove();
 							}
 						}
