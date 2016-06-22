@@ -135,12 +135,17 @@ public class ShoppingListController extends Controller {
 		Promise<Result> result = null;
 		
 		result = Promise.promise((Function0<Result>) () -> {
+			
 			LOGGER.info("getShoppingListCount >>");
 			Integer iSLItemcount = 0;
+			
 	        ShoppingListVO shoppingListVo = new ShoppingListVO();
-	        validateHeader(shoppingListVo, true, storeId);
-	        iSLItemcount = shoppingListService.getShoppingListCount(shoppingListVo, null);
+	        validateHeader(shoppingListVo, true, storeId);	        
 	        ListCountVO countVO = new ListCountVO();
+	        
+	        if(ValidationHelper.isNonEmpty(storeId)) {
+	        	iSLItemcount = shoppingListService.getShoppingListCount(shoppingListVo, null);
+	        }
 	        countVO.setNoShoppingListItems(iSLItemcount);
 	        LOGGER.info("getShoppingListCount <<");
 	        return ok(Json.toJson(countVO));
