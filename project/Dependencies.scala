@@ -24,7 +24,6 @@ object Dependencies {
   var hamcrest 		= "org.hamcrest" % "hamcrest-all" % "1.3" % "test"		
   val test		= "com.lordofthejars" % "nosqlunit-cassandra" % "0.8.1" % "test"
   val jedis     	= "redis.clients" % "jedis" % "2.7.3"
-  val qpidamqp 		= "org.apache.qpid" % "qpid-amqp-1-0-client-jms" % "0.32"
   val qpid		= "org.apache.qpid" % "qpid-jms-client" % "0.9.0"
   val jms      		= "org.apache.geronimo.specs" % "geronimo-jms_1.1_spec" % "1.1.1"
   val gson 		= "com.google.code.gson" % "gson" % "2.3.1" 
@@ -52,7 +51,6 @@ object Dependencies {
     cache,
     json,
     slf4j,
-    qpidamqp,
     qpid,
     jms
   )
