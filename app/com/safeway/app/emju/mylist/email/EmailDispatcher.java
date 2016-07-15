@@ -97,11 +97,18 @@ public class EmailDispatcher implements Runnable {
 	public void run() {
 		
 		try{
-			slNotification.setGroups(orderShoppingListForEmail(items, mailListVO));
-			slNotification.setBannerId(bannerId);
-			slNotification.setStoreAddress(getStoreAdress(ycsStoreId));
-			LOGGER.info("before dispatchShoppingList");
+			
+			if(slNotification != null) {
+				
+				slNotification.setGroups(orderShoppingListForEmail(items, mailListVO));
+				slNotification.setBannerId(bannerId);
+				slNotification.setStoreAddress(getStoreAdress(ycsStoreId));
+				LOGGER.info("before dispatchShoppingList");
+			
+			}
+			
 			emailBroker.sendEmail(slNotification, EmailType.SHOPPING_LIST);
+			
 		}catch(ApplicationException e) {
 			LOGGER.error("An exception happened when trying to send the email: " + e);
 		}

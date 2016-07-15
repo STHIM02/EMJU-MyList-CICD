@@ -61,6 +61,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private static final String J4U_IMAGE_URL;
 	private static final String YCS_IMAGE_URL;
 	private static final String YCS_IMAGE_EXT;
+	private static final long IDLE_TIMEOUT;
 
 	static {
 		
@@ -68,6 +69,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		J4U_IMAGE_URL = config.getString("j4u.offer.image.url");
 		YCS_IMAGE_URL = config.getString("j4u.ycs.image.url");
 		YCS_IMAGE_EXT = config.getString("j4u.ycs.image.ext");
+		IDLE_TIMEOUT = config.getLong("email.servicebus.message.timeout");
 	}
 
 	private StoreDAO storeDAO;
@@ -78,6 +80,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private MiscEntityCache miscEntityCache;
 	private StoreCache storeCache;
 	private EmailBroker emailBroker;
+	
+	private static long sessionIdleStart = System.currentTimeMillis();
 
 	@Inject
 	public ShoppingListServiceImp(ShoppingListDAO shoppingListDAO, OfferStatusService offerStatusService,
@@ -106,6 +110,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	public List<ShoppingListVO> getShoppingList(ShoppingListVO shoppingListVO) throws ApplicationException {
 
 		LOGGER.info(">>> getShoppingList");
+		
+		checkEmailIdleTimeout();
 		List<ShoppingListVO> returnShoppingListVOList = new ArrayList<ShoppingListVO>();
 
 		setPreferredStoreInfo(shoppingListVO.getHeaderVO(), shoppingListVO.getHeaderVO().getParamStoreId());
@@ -315,11 +321,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 			if (ValidationHelper.isNonEmpty(shoppingList.getItems())) {
 
-				EmailDispatcher dispatcher = new EmailDispatcher(emailBroker, storeCache, shoppingList.getItems(), 
-						mailListVO, headerVO.getBannner(), slNotification, ycsStoreId, J4U_IMAGE_URL, 
-						YCS_IMAGE_URL, YCS_IMAGE_EXT); 
-				Executor executor = Executors.newSingleThreadExecutor();
-				executor.execute(dispatcher);
+				sendEmail(shoppingList.getItems(), mailListVO, headerVO.getBannner(), 
+						slNotification, ycsStoreId);
 				
 			} else {
 				LOGGER.warn("No record found");
@@ -674,6 +677,30 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		}
 
 		return list.toArray(new String[list.size()]);
+	}
+	
+	private void sendEmail(List<ShoppingListItemVO> items, MailListVO mailListVO, String banner, 
+			EmailInformation slNotification, String ycsStoreId) {
+		
+		EmailDispatcher dispatcher = new EmailDispatcher(emailBroker, storeCache, items, 
+				mailListVO, banner, slNotification, ycsStoreId, J4U_IMAGE_URL, 
+				YCS_IMAGE_URL, YCS_IMAGE_EXT); 
+		Executor executor = Executors.newSingleThreadExecutor();
+		executor.execute(dispatcher);
+		
+		sessionIdleStart = System.currentTimeMillis();
+	}
+	
+	private void checkEmailIdleTimeout() {
+		
+		long endTime = System.currentTimeMillis();
+		long transcurredTime = endTime - sessionIdleStart;
+		
+		if(transcurredTime > IDLE_TIMEOUT) {
+			
+			sendEmail(null, null, null, null, null);
+			sessionIdleStart = System.currentTimeMillis();
+		}
 	}
 
 }
