@@ -699,7 +699,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		if(transcurredTime > IDLE_TIMEOUT) {
 			
 			sendEmail(null, null, null, null, null);
-			sessionIdleStart = System.currentTimeMillis();
 		}
 	}
 
