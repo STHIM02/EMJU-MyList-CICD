@@ -51,6 +51,7 @@ public class YCSDetailsProvider implements ItemDetailsProvider<ClubPrice> {
 			
 			if (Constants.YES.equalsIgnoreCase(details)) {
 				
+				shoppingListItemVO.setClubPrice(clubPrice);
 				shoppingListItemVO.setAddedDate("");
 				shoppingListItemVO.setEndDate("");
 				shoppingListItemVO.setTitle("");
