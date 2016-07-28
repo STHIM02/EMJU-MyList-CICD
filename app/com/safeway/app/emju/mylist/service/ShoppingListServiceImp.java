@@ -61,7 +61,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private static final String J4U_IMAGE_URL;
 	private static final String YCS_IMAGE_URL;
 	private static final String YCS_IMAGE_EXT;
-	private static final long IDLE_TIMEOUT;
 
 	static {
 		
@@ -69,7 +68,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		J4U_IMAGE_URL = config.getString("j4u.offer.image.url");
 		YCS_IMAGE_URL = config.getString("j4u.ycs.image.url");
 		YCS_IMAGE_EXT = config.getString("j4u.ycs.image.ext");
-		IDLE_TIMEOUT = config.getLong("email.servicebus.message.timeout");
 	}
 
 	private StoreDAO storeDAO;
@@ -80,8 +78,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private MiscEntityCache miscEntityCache;
 	private StoreCache storeCache;
 	private EmailBroker emailBroker;
-	
-	private static long sessionIdleStart = System.currentTimeMillis();
 
 	@Inject
 	public ShoppingListServiceImp(ShoppingListDAO shoppingListDAO, OfferStatusService offerStatusService,
@@ -111,7 +107,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 		LOGGER.info(">>> getShoppingList");
 		
-		checkEmailIdleTimeout();
 		List<ShoppingListVO> returnShoppingListVOList = new ArrayList<ShoppingListVO>();
 
 		setPreferredStoreInfo(shoppingListVO.getHeaderVO(), shoppingListVO.getHeaderVO().getParamStoreId());
@@ -687,19 +682,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 				YCS_IMAGE_URL, YCS_IMAGE_EXT); 
 		Executor executor = Executors.newSingleThreadExecutor();
 		executor.execute(dispatcher);
-		
-		sessionIdleStart = System.currentTimeMillis();
-	}
-	
-	private void checkEmailIdleTimeout() {
-		
-		long endTime = System.currentTimeMillis();
-		long transcurredTime = endTime - sessionIdleStart;
-		
-		if(transcurredTime > IDLE_TIMEOUT) {
-			
-			sendEmail(null, null, null, null, null);
-		}
+
 	}
 
 }
