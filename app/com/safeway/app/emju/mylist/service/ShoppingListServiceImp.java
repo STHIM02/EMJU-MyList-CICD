@@ -374,9 +374,12 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		String mapKey = null;
 		Integer itemStoreId = null;
 		Map<String, ShoppingListItem> itemMap = null;
+		Timestamp currentTime;
 
 		if (ValidationHelper.isNonEmpty(shoppingListItems)) {
 
+			currentTime = new Timestamp(System.currentTimeMillis());
+			
 			for (ShoppingListItem shoppingListItem : shoppingListItems) {
 
 				canBeProcess = false;
@@ -428,7 +431,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 						if (versionValues[2]) {
 
-							if (shoppingListItem.getItemEndDate().after(new Timestamp(System.currentTimeMillis()))
+							if (shoppingListItem.getItemEndDate().after(currentTime)
 									&& itemStoreId.intValue() == storeId.intValue()) {
 
 								mapKey = shoppingListItemId;
@@ -440,7 +443,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 						if (versionValues[0]) {
 
-							if (shoppingListItem.getItemEndDate().after(new Timestamp(System.currentTimeMillis()))
+							if (shoppingListItem.getItemEndDate().after(currentTime)
 									&& itemStoreId.intValue() == storeId.intValue()) {
 
 								mapKey = shoppingListItemId;
