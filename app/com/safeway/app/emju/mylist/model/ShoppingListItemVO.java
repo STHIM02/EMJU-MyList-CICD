@@ -2,11 +2,12 @@ package com.safeway.app.emju.mylist.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.safeway.app.emju.allocation.pricing.entity.ClubPrice;
 import com.safeway.app.emju.cache.entity.OfferDetail;
 import com.safeway.app.emju.helper.ValidationHelper;
 import com.safeway.app.emju.mylist.constant.Constants;
 
-@JsonIgnoreProperties({"offerDetail"})
+@JsonIgnoreProperties({"offerDetail","clubPrice"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingListItemVO {
 	
@@ -44,6 +45,7 @@ public class ShoppingListItemVO {
 	private String savingsCode;
 	private String savingsSubCode;
 	private OfferDetail offerDetail;
+	private ClubPrice clubPrice;
 	
 	public String getId() {
 		return id;
@@ -248,6 +250,12 @@ public class ShoppingListItemVO {
 	}
 	public void setOfferDetail(OfferDetail offerDetail) {
 		this.offerDetail = offerDetail;
+	}
+	public ClubPrice getClubPrice() {
+		return clubPrice;
+	}
+	public void setClubPrice(ClubPrice clubPrice) {
+		this.clubPrice = clubPrice;
 	}
 
 }

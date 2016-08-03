@@ -434,11 +434,11 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 
 		if (OfferClassifiers.PRICE_METHOD_TYPE_BOGO.equalsIgnoreCase(priceMethod)
 				&& OfferClassifiers.PRICE_METHOD_SUB_TYPE_B1G1.equalsIgnoreCase(priceMethodSubType)) {
-			offer.getOfferDetail().setPriceMethod(OfferClassifiers.PRICE_METHOD_TYPE_BOGO);
+			offer.getOfferDetail().setPriceType(OfferClassifiers.PRICE_METHOD_TYPE_BOGO);
 			offer.getOfferDetail().setPriceSubType(OfferClassifiers.PRICE_METHOD_SUB_TYPE_B1G1);
 		} else if (OfferClassifiers.PRICE_METHOD_TYPE_MB.equalsIgnoreCase(priceMethod)
 				&& OfferClassifiers.PRICE_METHOD_SUB_TYPE_MB2.equalsIgnoreCase(priceMethodSubType)) {
-			offer.getOfferDetail().setPriceMethod(OfferClassifiers.PRICE_METHOD_TYPE_MB);
+			offer.getOfferDetail().setPriceType(OfferClassifiers.PRICE_METHOD_TYPE_MB);
 			offer.getOfferDetail().setPriceSubType(OfferClassifiers.PRICE_METHOD_SUB_TYPE_MB2);
 		}
 
