@@ -66,7 +66,7 @@ public class CCOfferMapper {
 		
         boolean isAcceptableOffer = true;
 
-        String offerSubPgmTypeCd = offerDetail.getOfferSubProgram();
+        String offerSubPgmTypeCd = offerDetail.getOfferSubProgram() == null ? "" : offerDetail.getOfferSubProgram();
         
         if (offerInvalid && ClipStatus.UNCLIPPED.equalsIgnoreCase(clipStatus)) {
             isAcceptableOffer = false;
