@@ -43,7 +43,9 @@ public interface Constants {
 		CLUB_SPECIAL_ITEM("YCS"),
 		MOBILE_SPECIAL_ITEM("MCS"),
 		MANUAL_ITEM("FF"),
-		WEEKLY_SPECIAL_ITEM("WS");
+		WEEKLY_SPECIAL_ITEM("WS"),
+		LANDING_PAGE_ITEM("ELP"),
+		RECIPE_ITEM("REC");
 		
 		private String itemType;
 		
@@ -77,7 +79,7 @@ public interface Constants {
 	static final boolean[] filter_1_0 = new boolean[]{false,true,false};//Disable WS + Enable All Items filter + Disable MCS
 	static final boolean[] filter_1_1 = new boolean[]{true,true,true}; //Enable WS + Enable All Items filter + Enable MCS
 	static final boolean[] filter_1_2 = new boolean[]{false,false,false}; //Disable WS + Enable YCS filter + Disable MCS
-	static final boolean[] filter_1_3 = new boolean[]{true,false,false};  //Enable WS + Enable YCS filter + Disable MCS
+	static final boolean[] filter_1_3 = new boolean[]{true,true,false};  //Enable WS + Enable YCS filter + Disable MCS
 	static final boolean[] filter_1_4 = new boolean[]{false,false,true};  //Disable WS + Enable YCS filter + Enable MCS
 	static final boolean[] filter_1_5 = new boolean[]{true,false,true};   //Enable WS + Enable YCS filter + Enable MCS
 	

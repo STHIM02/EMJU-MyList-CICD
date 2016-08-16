@@ -38,6 +38,8 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 			@Named("MCS") ItemDetailsProvider mcsProvider,
 			@Named("FF") ItemDetailsProvider ffProvider,
 			@Named("WS") ItemDetailsProvider wsProvider,
+			@Named("ELP") ItemDetailsProvider elpProvider,
+			@Named("REC") ItemDetailsProvider recProvider,
 			@Named("CC") ItemDetailAsyncRetriever ccAsyncProvider,
 			@Named("PD") ItemDetailAsyncRetriever pdAsyncProvider,
 			@Named("YCS") ItemDetailAsyncRetriever ycsAsyncProvider) {
@@ -50,6 +52,8 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 		detailsProviderMap.put(ItemType.MCS, mcsProvider);
 		detailsProviderMap.put(ItemType.FF, ffProvider);
 		detailsProviderMap.put(ItemType.WS, wsProvider);
+		detailsProviderMap.put(ItemType.ELP, elpProvider);
+		detailsProviderMap.put(ItemType.REC, recProvider);
 		
 		asyncDetailProviderMap = new HashMap<String, ItemDetailAsyncRetriever>();
 		asyncDetailProviderMap.put(ItemType.CC, ccAsyncProvider);

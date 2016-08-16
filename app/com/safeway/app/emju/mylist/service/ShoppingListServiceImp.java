@@ -405,17 +405,17 @@ public class ShoppingListServiceImp implements ShoppingListService {
 							canBeProcess = true;
 						}
 
-						// For FF
-					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.MANUAL_ITEM.toString())) {
+//	Switch from refId to itemId					// For FF
+//					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.MANUAL_ITEM.toString())) {
+//
+//						mapKey = shoppingListItemId;
+//						canBeProcess = true;
 
-						mapKey = shoppingListItemId;
-						canBeProcess = true;
-
-						// For UPC
-					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())) {
-
-						mapKey = itemId;
-						canBeProcess = true;
+//						// For UPC
+//					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())) {
+//
+//						mapKey = itemId;
+//						canBeProcess = true;
 
 						// For YCS
 					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
@@ -450,6 +450,10 @@ public class ShoppingListServiceImp implements ShoppingListService {
 								canBeProcess = true;
 							}
 						}
+					} else { //Includes FF, UPC, ELP and REC
+						
+						mapKey = itemId;
+						canBeProcess = true;
 					}
 				}
 				if (canBeProcess) {
@@ -477,17 +481,15 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			ShoppingListVO shoppingListVO, List<ShoppingListItemVO> newSLItemVoSet, String details)
 					throws ApplicationException {
 
-		// String itemType = null;
 		Map<String, ShoppingListItem> itemMap = null;
 		Map<String, Promise<Map<Long, Object>>> offerDetails = new HashMap<String, Promise<Map<Long, Object>>>();
 
 		List<String> itemIteration = getOrderByItemNumbers(shoppingListItemsMap);
 
-		// for(ItemTypeCode itemTypes : ItemTypeCode.values()) {
 		for (String itemType : itemIteration) {
+			
 			LOGGER.debug("Item type to set details: " + itemType);
-			// itemType = itemTypes.toString(); //entry.getKey();
-			itemMap = shoppingListItemsMap.get(itemType); // entry.getValue();
+			itemMap = shoppingListItemsMap.get(itemType);
 			if (ValidationHelper.isNonEmpty(itemMap)) {
 				if (itemType.equals(ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())) {
 

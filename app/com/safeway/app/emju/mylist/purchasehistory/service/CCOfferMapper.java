@@ -44,12 +44,9 @@ public class CCOfferMapper {
 			List<Long> catalinaAllocationOffers,
 			OfferClipStatus offerClipStatus, String timezone)  {
 		
-
-		//TODO Save Catalina offer
-        
-       // boolean catalinaOffersAvailable = !CollectionUtils.isEmpty(catalinaAllocationOffers);
 		boolean catalinaOffersAvailable = !catalinaAllocationOffers.isEmpty();
         
+		AllocatedOffer offer = null;
         Long currentOfferId = offerDetail.getOfferId();
         String offerStatus = offerDetail.getOfferStatusTypeId();
         boolean offerInvalid = INVALID_STATUS_TYPES.contains(offerStatus);
@@ -68,13 +65,22 @@ public class CCOfferMapper {
 		Date clientDBCurrDt = new Date(clientDBCurrDtInMS);
 		
         boolean isAcceptableOffer = true;
-        
-        // Question: Old offerPgmTypeCd
-        //String offerPgmTypeCd = DataHelper.replaceIfNull(rs.getString("OFFER_PROGRAM_TYPE_CD"));
-        //New one using subProgrmTypeCd
+
         String offerSubPgmTypeCd = offerDetail.getOfferSubProgram();
         
-			boolean offerValid = OfferStatus.ACTIVE.equals(offerStatus);
+        if (offerInvalid && ClipStatus.UNCLIPPED.equalsIgnoreCase(clipStatus)) {
+            isAcceptableOffer = false;
+        }
+        else if (!offerInvalid && ClipStatus.UNCLIPPED.equalsIgnoreCase(clipStatus)) {
+            if (clientDBCurrDt.before(displayStartDt)
+                || clientDBCurrDt.after(displayEndDt)
+                || (offerSubPgmTypeCd.equalsIgnoreCase(HOUSEHOLD_TARGETED_OFFERS) && (!catalinaOffersAvailable || !catalinaAllocationOffers
+                    .contains(currentOfferId)))) {
+                isAcceptableOffer = false;
+            }
+        }
+/*        
+		boolean offerValid = OfferStatus.ACTIVE.equals(offerStatus);
 		
 		boolean isNotOfferDateValid = clientDBCurrDt.before(displayStartDt) || clientDBCurrDt.after(displayEndDt);
 		
@@ -135,58 +141,27 @@ public class CCOfferMapper {
 		}
 		
 		LOGGER.debug(">>>> isAcceptableOffer after = " + isAcceptableOffer);
-		
-		
-        
-        //offer = clipped , offer status = L, offer = expired.
-        //Current ETL load will not load any expired offers so we should be fine.
-        //TODO : Sen email to Nina
-        
-        /*if (offerInvalid && ClipStatus.UNCLIPPED.equalsIgnoreCase(clipStatus)) {
-            isAcceptableOffer = false;
-        }
-        else if (!offerInvalid && ClipStatus.UNCLIPPED.equalsIgnoreCase(clipStatus)) {
-            if (clientDBCurrDt.before(displayStartDt)
-                || clientDBCurrDt.after(displayEndDt) 
-                || (offerSubPgmTypeCd.equalsIgnoreCase(HOUSEHOLD_TARGETED_OFFERS) && (!catalinaOffersAvailable || !catalinaAllocationOffers
-                    .contains(currentOfferId)))) {
-                isAcceptableOffer = false;
-            }
-        }*/
         
         if(!isAcceptableOffer) {
         	return null;
         }
-
+*/
         
-        AllocatedOffer offer = new AllocatedOffer();
-
-         
-        offer.setOfferId(currentOfferId);
-        offer.setOfferPgm(offerDetail.getOfferProgramCd());
-        
-
-        offer.setOfferTs(new Timestamp(offerDetail.getLastUpdateTs().getTime()));
-        
-        //Question: setting sub program type cd??
-        offer.setOfferProgramTypeCd(offerSubPgmTypeCd);
-        
-    
-        offer.setShoppingListCategoryId(offerDetail.getPrimaryCategoryId());
-        
-        offer.setPriceMethodCd(DataHelper.replaceIfNull(offerDetail.getPriceMethodCd()));
-        offer.setExtlOfferId(offerDetail.getExternalOfferId());
-        offer.setClipStatus(clipStatus);
-        
-
-        offer.setClipId(offerClipStatus.getOfferId());//TODO : ARUN TO ADD ClipID in offerClipStatus. Chnage to use that 
-        
-        offer.setPurchaseInd(PurchaseIndicator.PURCHASE_IND_BOUGHT); 
-        
-
-        offer.getOfferDetail().setStartDt(displayStartDt);
-        offer.getOfferDetail().setEndDt(offerEndDt);
-       
+        if (isAcceptableOffer) {
+	        offer = new AllocatedOffer();
+	        offer.setOfferId(currentOfferId);
+	        offer.setOfferPgm(offerDetail.getOfferProgramCd());
+	        offer.setOfferTs(new Timestamp(offerDetail.getLastUpdateTs().getTime()));
+	        offer.setOfferProgramTypeCd(offerSubPgmTypeCd);
+	        offer.setShoppingListCategoryId(offerDetail.getPrimaryCategoryId());
+	        offer.setPriceMethodCd(DataHelper.replaceIfNull(offerDetail.getPriceMethodCd()));
+	        offer.setExtlOfferId(offerDetail.getExternalOfferId());
+	        offer.setClipStatus(clipStatus);
+	        offer.setClipId(offerClipStatus.getOfferId());
+	        offer.setPurchaseInd(PurchaseIndicator.PURCHASE_IND_BOUGHT); 
+	        offer.getOfferDetail().setStartDt(displayStartDt);
+	        offer.getOfferDetail().setEndDt(offerEndDt);
+        }
 
         return offer;
     }
