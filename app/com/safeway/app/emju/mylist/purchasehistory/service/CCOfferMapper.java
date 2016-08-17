@@ -67,7 +67,7 @@ public class CCOfferMapper {
 
         String offerSubPgmTypeCd = offerDetail.getOfferSubProgram() == null ? "" : offerDetail.getOfferSubProgram();
         
-        if(clientDBCurrDt.before(displayStartDt) || clientDBCurrDt.after(displayEndDt)){
+        if(clientDBCurrDt.before(displayStartDt) || clientDBCurrDt.after(offerEndDt)){
         	
         	isAcceptableOffer = false;
         	

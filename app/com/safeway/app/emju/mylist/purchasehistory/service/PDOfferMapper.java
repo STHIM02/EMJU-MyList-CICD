@@ -8,12 +8,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.safeway.app.emju.allocation.cliptracking.model.OfferClipStatus;
 import com.safeway.app.emju.allocation.helper.OfferConstants.ClipStatus;
-import com.safeway.app.emju.allocation.helper.OfferConstants.OfferStatus;
 import com.safeway.app.emju.allocation.helper.OfferConstants.PurchaseIndicator;
 import com.safeway.app.emju.allocation.pricing.entity.OfferStorePrice;
 import com.safeway.app.emju.allocation.pricing.helper.PDPricingHelper;
@@ -74,10 +70,9 @@ public class PDOfferMapper {
 		
 		String offerStatus = offerDetail.getOfferStatusTypeId();
 		boolean offerInvalid =  INVALID_STATUS_TYPES.contains(offerStatus);
-		boolean offerValid = OfferStatus.ACTIVE.equals(offerStatus);
 		
 		
-		if (clientDBCurrDt.before(displayStartDt) || clientDBCurrDt.after(displayEndDt)) {
+		if (clientDBCurrDt.before(displayStartDt) || clientDBCurrDt.after(offerEndDt)) {
 			
 			isAcceptableOffer = false;
 			
