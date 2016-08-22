@@ -84,6 +84,9 @@ public class WSDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 			if (null != wsItem.getItemTitle()) {
 				shoppingListItemVO.setTitle(wsItem.getItemTitle());
 			}
+			if (null != wsItem.getItemImage()) {
+				shoppingListItemVO.setImage(wsItem.getItemImage());
+			}
 		}
 		return shoppingListItemVO;
 	}

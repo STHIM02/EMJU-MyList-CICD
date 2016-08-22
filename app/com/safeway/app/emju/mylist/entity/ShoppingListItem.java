@@ -88,6 +88,9 @@ public class ShoppingListItem {
 	@Column(name = "last_upd_usr_id")
 	private String lastUpdUsrId;
 	
+	@Column(name = "item_image")
+	private String itemImage;
+	
 	public String getRetailCustomerId() {
 		return retailCustomerId;
 	}
@@ -278,6 +281,14 @@ public class ShoppingListItem {
 
 	public void setLastUpdUsrId(String lastUpdUsrId) {
 		this.lastUpdUsrId = lastUpdUsrId;
+	}
+
+	public String getItemImage() {
+		return itemImage;
+	}
+
+	public void setItemImage(String itemImage) {
+		this.itemImage = itemImage;
 	}
 
 	@Override
