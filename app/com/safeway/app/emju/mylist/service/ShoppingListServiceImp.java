@@ -61,6 +61,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private static final String J4U_IMAGE_URL;
 	private static final String YCS_IMAGE_URL;
 	private static final String YCS_IMAGE_EXT;
+	private static final String WS_IMAGE_URL;
+	private static final String WS_IMAGE_EXT;
 
 	static {
 		
@@ -68,6 +70,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		J4U_IMAGE_URL = config.getString("j4u.offer.image.url");
 		YCS_IMAGE_URL = config.getString("j4u.ycs.image.url");
 		YCS_IMAGE_EXT = config.getString("j4u.ycs.image.ext");
+		WS_IMAGE_URL = config.getString("j4u.ws.image.url");
+		WS_IMAGE_EXT = config.getString("j4u.ws.image.ext");
 	}
 
 	private StoreDAO storeDAO;
@@ -684,7 +688,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		
 		EmailDispatcher dispatcher = new EmailDispatcher(emailBroker, storeCache, items, 
 				mailListVO, banner, slNotification, ycsStoreId, J4U_IMAGE_URL, 
-				YCS_IMAGE_URL, YCS_IMAGE_EXT); 
+				YCS_IMAGE_URL, YCS_IMAGE_EXT, WS_IMAGE_URL, WS_IMAGE_EXT); 
 		Executor executor = Executors.newSingleThreadExecutor();
 		executor.execute(dispatcher);
 
