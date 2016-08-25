@@ -143,7 +143,6 @@ public class EmailDispatcher implements Runnable {
 		EmailItemGroup shoppingListItemGroup = null;
 		int numberOfResults = 0;
 		int numberOfCategories = 0;
-		StringBuffer imageUrl = null;
 
 		// for sorting by category name, title
 		List<ShoppingListItemVO> itemVOSList = new ArrayList<ShoppingListItemVO>();
@@ -206,13 +205,13 @@ public class EmailDispatcher implements Runnable {
 						}
 
 						if (null != currentItem.getImage()) {
-							imageUrl = new StringBuffer();
+							StringBuffer imageUrl = new StringBuffer();
 
 							if (Constants.J4U.contains(currentItem.getItemType())) {
 								imageUrl.append(J4U_IMAGE_URL);
+								imageUrl.append(currentItem.getImage());
+								shoppingListItemDetail.setImage(imageUrl.toString());
 							}
-							imageUrl.append(currentItem.getImage());
-							shoppingListItemDetail.setImage(imageUrl.toString());
 						}
 
 						String itemTitle = currentItem.getTitle() == null ? null : currentItem.getTitle();
@@ -238,7 +237,7 @@ public class EmailDispatcher implements Runnable {
 							// Validate the image url is not exist then it
 							// default to ycs url
 							if (null == currentItem.getImage()) {
-								imageUrl = new StringBuffer();
+								StringBuffer imageUrl = new StringBuffer();
 
 								imageUrl.append(YCS_IMAGE_URL).append(currentItem.getReferenceId()).append(YCS_IMAGE_EXT);
 								LOGGER.debug("YCS Image Path: " + imageUrl.toString());
@@ -293,7 +292,7 @@ public class EmailDispatcher implements Runnable {
 								|| currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
 							
 							if (null == currentItem.getImage()) {
-								imageUrl = new StringBuffer();
+								StringBuffer imageUrl = new StringBuffer();
 
 								LOGGER.debug("WS path: " + WS_IMAGE_URL);
 								imageUrl.append(WS_IMAGE_URL).append(currentItem.getImage()).append(WS_IMAGE_EXT);
