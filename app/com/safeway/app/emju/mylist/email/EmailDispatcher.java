@@ -295,6 +295,7 @@ public class EmailDispatcher implements Runnable {
 							if (null == currentItem.getImage()) {
 								imageUrl = new StringBuffer();
 
+								LOGGER.debug("WS path: " + WS_IMAGE_URL);
 								imageUrl.append(WS_IMAGE_URL).append(currentItem.getImage()).append(WS_IMAGE_EXT);
 								LOGGER.debug("WS Image Path: " + imageUrl.toString());
 								if (canImageLoad(imageUrl.toString())) {
