@@ -15,8 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
@@ -39,6 +37,7 @@ import com.safeway.app.emju.mylist.dao.ShoppingListDAO;
 import com.safeway.app.emju.mylist.dao.StoreDAO;
 import com.safeway.app.emju.mylist.email.EmailDispatcher;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
+import com.safeway.app.emju.mylist.helper.ExecutionContextHelper;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.CategoryHierarchyVO;
 import com.safeway.app.emju.mylist.model.HeaderVO;
@@ -53,6 +52,7 @@ import com.safeway.app.emju.util.GenericConstants;
 import play.Configuration;
 import play.Play;
 import play.libs.F.Promise;
+import scala.concurrent.ExecutionContext;
 
 public class ShoppingListServiceImp implements ShoppingListService {
 
@@ -519,7 +519,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 				} else if (itemType.equals(ItemTypeCode.COUPON_ITEM.toString())
 						|| itemType.equals(ItemTypeCode.PERSONAL_DEAL_ITEM.toString())
-						|| itemType.equals(ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
+						|| itemType.equals(ItemTypeCode.CLUB_SPECIAL_ITEM.toString())
+						|| itemType.equals(ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
 
 					offerDetails.put(itemType, itemDetaislService.getAsyncDetails(itemType, itemMap, shoppingListVO));
 
@@ -689,9 +690,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		EmailDispatcher dispatcher = new EmailDispatcher(emailBroker, storeCache, items, 
 				mailListVO, banner, slNotification, ycsStoreId, J4U_IMAGE_URL, 
 				YCS_IMAGE_URL, YCS_IMAGE_EXT, WS_IMAGE_URL, WS_IMAGE_EXT); 
-		Executor executor = Executors.newSingleThreadExecutor();
+		ExecutionContext executor = ExecutionContextHelper.getContext("play.akka.actor.email-context");
 		executor.execute(dispatcher);
-
 	}
 
 }

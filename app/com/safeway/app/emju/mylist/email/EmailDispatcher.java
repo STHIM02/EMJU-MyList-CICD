@@ -288,19 +288,28 @@ public class EmailDispatcher implements Runnable {
 							shoppingListItemDetail.setType(types.get(currentItem.getItemType()));
 							shoppingListItemDetail.setSavings(
 									savingsSuffix.get(currentItem.getItemType()) + currentItem.getSavingsValue());
-						} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.LANDING_PAGE_ITEM.toString())
-								|| currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
+						} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
 							
 							if (null != currentItem.getImage()) {
 								StringBuffer imageUrl = new StringBuffer();
 
-								LOGGER.debug("WS path: " + WS_IMAGE_URL);
 								imageUrl.append(WS_IMAGE_URL).append(currentItem.getImage()).append(WS_IMAGE_EXT);
 								LOGGER.debug("WS Image Path: " + imageUrl.toString());
 								if (canImageLoad(imageUrl.toString())) {
 									
 									LOGGER.debug("WS Set Image Path: " + imageUrl.toString());
 									shoppingListItemDetail.setImage(imageUrl.toString());
+								}
+							}
+						} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.LANDING_PAGE_ITEM.toString())) {
+							
+							if (null != currentItem.getImage()) {
+								
+								LOGGER.debug("ELP Image Path: " + currentItem.getImage());
+								if (canImageLoad(currentItem.getImage())) {
+									
+									LOGGER.debug("ELP Set Image Path: " + currentItem.getImage());
+									shoppingListItemDetail.setImage(currentItem.getImage());
 								}
 							}
 						}

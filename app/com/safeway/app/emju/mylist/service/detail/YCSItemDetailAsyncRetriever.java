@@ -15,13 +15,17 @@ import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
 
+import play.libs.Akka;
+import play.libs.F;
+import play.libs.F.Function0;
 import play.libs.F.Promise;
+import scala.concurrent.ExecutionContext;
 
 public class YCSItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever<ClubPrice> {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(YCSItemDetailAsyncRetriever.class);
 	
-private ClubPriceDAO clubPriceDao;
+	private ClubPriceDAO clubPriceDao;
 	
 	@Inject
 	public YCSItemDetailAsyncRetriever(ClubPriceDAO clubPriceDao){
@@ -34,6 +38,19 @@ private ClubPriceDAO clubPriceDao;
 		
 		return Promise.promise(() -> this.getItemDetails(itemMap, shoppingListVO));
 		
+	}
+	
+	@Override
+	public Promise<Map<Long, ClubPrice>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
+			ShoppingListVO shoppingListVO, ExecutionContext threadCtx) throws ApplicationException {
+		
+		ExecutionContext exeCtx = threadCtx != null ? threadCtx : Akka.system().dispatchers().defaultGlobalDispatcher();
+		
+		Promise<Map<Long, ClubPrice>> promise = F.Promise.promise((Function0<Map<Long, ClubPrice>>) () -> {
+            return this.getItemDetails(itemMap, shoppingListVO);
+        } , exeCtx);
+		
+		return promise;
 	}
 	
 	private Map<Long, ClubPrice> getItemDetails(Map<String, ShoppingListItem> itemMap,
@@ -50,7 +67,6 @@ private ClubPriceDAO clubPriceDao;
 			scanCodes.add(Long.valueOf(entry.getKey()));
 		}
 
-		//ycsPrices.putAll(clubPriceDao.findItemPrices(timeZone, storeId, scanCodes));
 		Map<Long, ClubPrice> ycsPricesByStoreId = clubPriceDao.findItemPrices(timeZone, storeId);
 		ClubPrice entity = null;
 		

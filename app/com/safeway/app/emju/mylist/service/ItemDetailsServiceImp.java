@@ -14,11 +14,13 @@ import com.google.inject.name.Named;
 import com.safeway.app.emju.allocation.helper.OfferConstants.ItemType;
 import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
+import com.safeway.app.emju.mylist.helper.ExecutionContextHelper;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.ShoppingListItemVO;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
 
 import play.libs.F.Promise;
+import scala.concurrent.ExecutionContext;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Singleton
@@ -42,7 +44,8 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 			@Named("REC") ItemDetailsProvider recProvider,
 			@Named("CC") ItemDetailAsyncRetriever ccAsyncProvider,
 			@Named("PD") ItemDetailAsyncRetriever pdAsyncProvider,
-			@Named("YCS") ItemDetailAsyncRetriever ycsAsyncProvider) {
+			@Named("YCS") ItemDetailAsyncRetriever ycsAsyncProvider,
+			@Named("WS") ItemDetailAsyncRetriever wsAsyncProvider) {
 		
 		detailsProviderMap = new HashMap<String, ItemDetailsProvider>();
 		detailsProviderMap.put(ItemType.UPC, upcProvider);
@@ -59,6 +62,7 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 		asyncDetailProviderMap.put(ItemType.CC, ccAsyncProvider);
 		asyncDetailProviderMap.put(ItemType.PD, pdAsyncProvider);
 		asyncDetailProviderMap.put(ItemType.YCS, ycsAsyncProvider);
+		asyncDetailProviderMap.put(ItemType.WS, wsAsyncProvider);
 	}
 
 	@Override
@@ -86,8 +90,10 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 	public Promise<Map<Long, Object>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
 			ShoppingListVO shoppingListVO) throws ApplicationException {
 		
+		ExecutionContext serviceContext = ExecutionContextHelper.getContext("play.akka.actor.detail-context");
 		ItemDetailAsyncRetriever itemDetailAsyncRetriever = asyncDetailProviderMap.get(itemType);
-		return itemDetailAsyncRetriever.getAsyncDetails(itemType, itemMap, shoppingListVO);
+//		return itemDetailAsyncRetriever.getAsyncDetails(itemType, itemMap, shoppingListVO);
+		return itemDetailAsyncRetriever.getAsyncDetails(itemType, itemMap, shoppingListVO, serviceContext);
 		
 	}
 
