@@ -1,7 +1,5 @@
 package com.safeway.app.emju.mylist.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,8 +24,8 @@ public class WeeklyAddVO {
 	private String EndDate;
 	private String ProductCode;
 	private String BarCode;
-	private List<WSCategoryVO> Categories;
-	private List<WSCustomPropertyVO> CustomProperties;
+	private WSCategoryVO[] Categories;
+	private WSCustomPropertyVO[] CustomProperties;
 	
 	public String getEventId() {
 		return EventId;
@@ -143,16 +141,16 @@ public class WeeklyAddVO {
 	public void setBarCode(String barCode) {
 		BarCode = barCode;
 	}
-	public List<WSCategoryVO> getCategories() {
+	public WSCategoryVO[] getCategories() {
 		return Categories;
 	}
-	public void setCategories(List<WSCategoryVO> categories) {
+	public void setCategories(WSCategoryVO[] categories) {
 		Categories = categories;
 	}
-	public List<WSCustomPropertyVO> getCustomProperties() {
+	public WSCustomPropertyVO[] getCustomProperties() {
 		return CustomProperties;
 	}
-	public void setCustomProperties(List<WSCustomPropertyVO> customProperties) {
+	public void setCustomProperties(WSCustomPropertyVO[] customProperties) {
 		CustomProperties = customProperties;
 	}
 }
