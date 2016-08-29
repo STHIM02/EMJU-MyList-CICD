@@ -155,7 +155,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 				if (null != wsItem.getItemTitle()) {
 					shoppingListItemVO.setTitle(wsItem.getItemTitle());
 				}
-				if (null != wsItem.getItemImage()) {
+				if (null != weeklyAddVo.getDefaultImage()) {
 					shoppingListItemVO.setImage(weeklyAddVo.getDefaultImage());
 				}
 			}

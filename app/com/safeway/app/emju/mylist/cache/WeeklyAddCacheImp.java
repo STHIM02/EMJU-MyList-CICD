@@ -76,7 +76,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 					}
 				});
 
-				LOGGER.info("StoreId Keys got from Redis Cache : " + result.keySet());
+				LOGGER.info("OfferId Keys got from Redis Cache : " + result.keySet());
 			}
 
 			List<String> cacheMissedOffers = offerIds.stream().filter(offerId -> {
