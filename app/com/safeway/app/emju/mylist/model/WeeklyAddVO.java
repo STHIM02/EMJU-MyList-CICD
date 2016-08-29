@@ -24,10 +24,14 @@ public class WeeklyAddVO {
 	private String WasNowPrice;
 	private String UOM;
 	private String PriceCopy;
+	private String SaveAmount;
+	private String CallOutCopy;
+	private String LimitText;
+	private String LegalText;
+	private String StartDate;
 	private String EndDate;
 	private String ProductCode;
 	private String BarCode;
-	private String SaveAmount;
 	private List<WSCategoryVO> Categories;
 	private List<WSCustomPropertyVO> CustomProperties;
 	
@@ -143,6 +147,41 @@ public class WeeklyAddVO {
 	public void setPriceCopy(String priceCopy) {
 		PriceCopy = priceCopy;
 	}
+	@JsonProperty("SaveAmount")
+	public String getSaveAmount() {
+		return SaveAmount;
+	}
+	public void setSaveAmount(String saveAmount) {
+		SaveAmount = saveAmount;
+	}
+	@JsonProperty("CallOutCopy")
+	public String getCallOutCopy() {
+		return CallOutCopy;
+	}
+	public void setCallOutCopy(String callOutCopy) {
+		CallOutCopy = callOutCopy;
+	}
+	@JsonProperty("LimitText")
+	public String getLimitText() {
+		return LimitText;
+	}
+	public void setLimitText(String limitText) {
+		LimitText = limitText;
+	}
+	@JsonProperty("LegalText")
+	public String getLegalText() {
+		return LegalText;
+	}
+	public void setLegalText(String legalText) {
+		LegalText = legalText;
+	}
+	@JsonProperty("StartDate")
+	public String getStartDate() {
+		return StartDate;
+	}
+	public void setStartDate(String startDate) {
+		StartDate = startDate;
+	}
 	@JsonProperty("EndDate")
 	public String getEndDate() {
 		return EndDate;
@@ -163,13 +202,6 @@ public class WeeklyAddVO {
 	}
 	public void setBarCode(String barCode) {
 		BarCode = barCode;
-	}
-	@JsonProperty("SaveAmount")
-	public String getSaveAmount() {
-		return SaveAmount;
-	}
-	public void setSaveAmount(String saveAmount) {
-		SaveAmount = saveAmount;
 	}
 	@JsonProperty("Categories")
 	public List<WSCategoryVO> getCategories() {
