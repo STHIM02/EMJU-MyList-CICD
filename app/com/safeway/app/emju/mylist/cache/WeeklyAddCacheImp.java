@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import com.safeway.app.emju.cache.CacheAccessException;
 import com.safeway.app.emju.cache.RedisCacheManager;
 import com.safeway.app.emju.cache.dao.StoreDBException;
+import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.exception.FaultCodeBase;
 import com.safeway.app.emju.helper.ValidationHelper;
 import com.safeway.app.emju.logging.Logger;
@@ -110,6 +111,23 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 					.append(FaultCodeBase.CACHE_UNAVAILABLE.getDescription()).append(" : ").append(jcx.getMessage())
 					.toString(), jcx);
 			refresh(offerIds);
+		} catch(ApplicationException ae) {			
+			LOGGER.error(ae.toString(), ae);
+			
+			try {
+				
+				List<WeeklyAdd> weeklyAddList = weeklyAddDAO.getWeeklyAddByOfferId(offerIds);
+
+				for (WeeklyAdd weeklyAdd : weeklyAddList) {
+					
+					String jsonValue = weeklyAdd.getResponse();
+					WeeklyAddVO weeklyAddVO = mapJsonToObject(jsonValue);
+					result.put(weeklyAdd.getOfferId(), weeklyAddVO);
+					
+				}
+			} catch (ApplicationException e) {
+				LOGGER.error(e.toString(), e);
+			}
 		} catch (Exception ex) {
 			LOGGER.error(new StringBuilder(FaultCodeBase.CACHE_READ_FAILURE.getCode()).append(" - ")
 					.append(FaultCodeBase.CACHE_READ_FAILURE.getDescription()).append(" : ").append(ex.getMessage())
