@@ -27,6 +27,7 @@ public class WeeklyAddVO {
 	private String EndDate;
 	private String ProductCode;
 	private String BarCode;
+	private String SaveAmount;
 	private List<WSCategoryVO> Categories;
 	private List<WSCustomPropertyVO> CustomProperties;
 	
@@ -162,6 +163,13 @@ public class WeeklyAddVO {
 	}
 	public void setBarCode(String barCode) {
 		BarCode = barCode;
+	}
+	@JsonProperty("SaveAmount")
+	public String getSaveAmount() {
+		return SaveAmount;
+	}
+	public void setSaveAmount(String saveAmount) {
+		SaveAmount = saveAmount;
 	}
 	@JsonProperty("Categories")
 	public List<WSCategoryVO> getCategories() {
