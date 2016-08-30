@@ -10,7 +10,7 @@ public interface Constants {
 
 		DOMINICKS("dominicks"), SAFEWAY("safeway"), VONS("vons"), RANDALLS(
 				"randalls"), TOMTHUMB("tomthumb"), CARRSQC("carrsqc"), PAVILIONS(
-				"pavilions" ), JUSTFORU ("justforu");
+				"pavilions" ), JUSTFORU ("justforu"), ALBERTSONS("albertsons");
 
 		private String bannerName;
 
