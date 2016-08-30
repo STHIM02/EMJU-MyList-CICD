@@ -116,6 +116,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 			
 			try {
 				
+				LOGGER.debug("Retrieving WS details from weeklyAddDAO");
 				List<WeeklyAdd> weeklyAddList = weeklyAddDAO.getWeeklyAddByOfferId(offerIds);
 
 				for (WeeklyAdd weeklyAdd : weeklyAddList) {
@@ -125,6 +126,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 					result.put(weeklyAdd.getOfferId(), weeklyAddVO);
 					
 				}
+				LOGGER.debug("Retrieved WS details from weeklyAddDAO");
 			} catch (ApplicationException e) {
 				LOGGER.error(e.toString(), e);
 			}

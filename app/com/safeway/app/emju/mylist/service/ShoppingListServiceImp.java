@@ -63,6 +63,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private static final String YCS_IMAGE_EXT;
 	private static final String WS_IMAGE_URL;
 	private static final String WS_IMAGE_EXT;
+	private static final int LOG_TIMEOUT;
 
 	static {
 		
@@ -72,6 +73,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		YCS_IMAGE_EXT = config.getString("j4u.ycs.image.ext");
 		WS_IMAGE_URL = config.getString("j4u.ws.image.url");
 		WS_IMAGE_EXT = config.getString("j4u.ws.image.ext");
+		LOG_TIMEOUT = config.getInt("emju.app.mylist.log.timeout");
 	}
 
 	private StoreDAO storeDAO;
@@ -148,6 +150,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			}
 
 			Map<String, Map<String, ShoppingListItem>> shoppingListItemsMap = new HashMap<String, Map<String, ShoppingListItem>>();
+			Map<String, Integer> logMap = new HashMap<String, Integer>();
 
 			if (!filterAllItems) {
 				if (ValidationHelper.isNonEmpty(ycsStoreId)) {
@@ -162,6 +165,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			for (ItemTypeCode itemType : ItemTypeCode.values()) {
 
 				shoppingListItemsMap.put(itemType.toString(), new HashMap<String, ShoppingListItem>());
+				logMap.put(itemType.toString(), 0);
 			}
 
 			LOGGER.debug("Retrieving redeemed offers");
@@ -185,14 +189,19 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			long startTime = System.currentTimeMillis();
 			
 			processShoppingList(shoppingListItems, shoppingListItemsMap, redeemedOfferList, itemIdsList,
-					hasItemIdFilter, versionValues, fromTime, deletedItems, Integer.valueOf(ycsStoreId));
+					hasItemIdFilter, versionValues, fromTime, deletedItems, Integer.valueOf(ycsStoreId), logMap);
 			
 			long endTime = System.currentTimeMillis();
 			
-			if((endTime - startTime) > 1000) {
+			if((endTime - startTime) > LOG_TIMEOUT) {
 				
 				LOGGER.error("processShoppingList method took " + (endTime - startTime) + " milliseconds "
 						+ "to process " + shoppingListItems.size() + " shopping list items");
+				LOGGER.error("The distribution of item types are: ");
+				for(Entry<String, Integer> entry : logMap.entrySet()) {
+					LOGGER.error("Total of " + entry.getKey() + " retrived: " + entry.getValue() + 
+							", total valid items: " + shoppingListItemsMap.get(entry.getKey()).size());
+				}
 			}
 
 			List<ShoppingListItemVO> newSLItemVoSet = new ArrayList<ShoppingListItemVO>();
@@ -368,7 +377,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private void processShoppingList(List<ShoppingListItem> shoppingListItems,
 			Map<String, Map<String, ShoppingListItem>> shoppingListItemsMap, List<Long> redeemedOfferList,
 			List<String> itemIdsList, boolean hasItemIdFilter, boolean[] versionValues, Date fromTime,
-			List<ShoppingListItemVO> deletedItems, Integer storeId) {
+			List<ShoppingListItemVO> deletedItems, Integer storeId, Map<String, Integer> logMap) {
 
 		boolean canBeProcess = false;
 		String itemTypeCd = null;
@@ -390,13 +399,13 @@ public class ShoppingListServiceImp implements ShoppingListService {
 				itemTypeCd = shoppingListItem.getItemTypeCd();
 				itemTypeCd = itemTypeCd.equals("MF") || itemTypeCd.equals("SC")
 						? Constants.ItemTypeCode.COUPON_ITEM.toString() : itemTypeCd;
-				LOGGER.debug("The item type being processed is " + itemTypeCd);
 				itemId = shoppingListItem.getItemId();
 				shoppingListItemId = shoppingListItem.getItemRefId();
 				clipId = shoppingListItem.getClipId();
 				itemStoreId = shoppingListItem.getStoreId();
 				itemMap = shoppingListItemsMap.get(itemTypeCd);
-				LOGGER.debug("The map is " + itemMap);
+				
+				logMap.put(itemTypeCd, logMap.get(itemTypeCd) + 1);
 
 				if (fromTime == null || fromTime.before(shoppingListItem.getLastUpdTs())) {
 					// For CC, PD
@@ -552,8 +561,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		Map<String, Integer> itemByNumbers = new HashMap<String, Integer>();
 
 		for (Entry<String, Map<String, ShoppingListItem>> entry : shoppingListItemsMap.entrySet()) {
-
-			LOGGER.debug("Ordering items: " + entry.getKey() + " size: " + entry.getValue().size());
+			
 			itemByNumbers.put(entry.getKey(), entry.getValue().size());
 		}
 
