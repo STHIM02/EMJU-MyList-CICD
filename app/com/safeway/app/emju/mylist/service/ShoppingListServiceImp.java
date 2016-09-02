@@ -459,7 +459,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 							if (shoppingListItem.getItemEndDate().after(currentTime)
 									&& itemStoreId.intValue() == storeId.intValue()) {
 
-								mapKey = shoppingListItemId;
+								mapKey = itemId;
 								canBeProcess = true;
 							}
 						}
