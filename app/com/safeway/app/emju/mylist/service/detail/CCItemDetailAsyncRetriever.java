@@ -17,7 +17,11 @@ import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
 
+import play.libs.Akka;
+import play.libs.F;
+import play.libs.F.Function0;
 import play.libs.F.Promise;
+import scala.concurrent.ExecutionContext;
 
 public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever<OfferDetail> {
 	
@@ -38,6 +42,19 @@ public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever
 			ShoppingListVO shoppingListVO) throws ApplicationException {
 		
 		return Promise.promise(() -> this.getOfferDetails(itemMap, shoppingListVO));
+	}
+	
+	@Override
+	public Promise<Map<Long, OfferDetail>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
+			ShoppingListVO shoppingListVO, ExecutionContext threadCtx) throws ApplicationException {
+		
+		ExecutionContext exeCtx = threadCtx != null ? threadCtx : Akka.system().dispatchers().defaultGlobalDispatcher();
+		
+		Promise<Map<Long, OfferDetail>> promise = F.Promise.promise((Function0<Map<Long, OfferDetail>>) () -> {
+            return this.getOfferDetails(itemMap, shoppingListVO);
+        } , exeCtx);
+		
+		return promise;
 	}
 	
 	private Map<Long, OfferDetail> getOfferDetails(Map<String, ShoppingListItem> itemMap, ShoppingListVO shoppingListVO)

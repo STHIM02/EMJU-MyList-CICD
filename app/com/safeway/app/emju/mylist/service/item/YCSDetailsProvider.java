@@ -33,7 +33,7 @@ public class YCSDetailsProvider implements ItemDetailsProvider<ClubPrice> {
 		return null;
 	}
 	
-	private ShoppingListItemVO populateYCSItem(ShoppingListItem newYourCardSpecialItem, ClubPrice clubPrice,
+	private ShoppingListItemVO populateYCSItem(ShoppingListItem ycsItem, ClubPrice clubPrice,
 			ShoppingListVO shoppingListVO) {
 
 		ShoppingListItemVO shoppingListItemVO = null;
@@ -41,13 +41,13 @@ public class YCSDetailsProvider implements ItemDetailsProvider<ClubPrice> {
 		String details = shoppingListVO.getHeaderVO().getDetails();
 		String clientTimezone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
 
-		if (newYourCardSpecialItem != null) {
+		if (ycsItem != null) {
 
 			shoppingListItemVO = new ShoppingListItemVO();
 			
 			shoppingListItemVO.setReferenceId(clubPrice.getRetailScanCd().toString());
-			shoppingListItemVO.setItemType(newYourCardSpecialItem.getItemTypeCd());
-			shoppingListItemVO.setId(newYourCardSpecialItem.getClipId());
+			shoppingListItemVO.setItemType(ycsItem.getItemTypeCd());
+			shoppingListItemVO.setId(ycsItem.getClipId());
 			
 			if (Constants.YES.equalsIgnoreCase(details)) {
 				
@@ -61,13 +61,13 @@ public class YCSDetailsProvider implements ItemDetailsProvider<ClubPrice> {
 				shoppingListItemVO.setCategoryId("");
 				shoppingListItemVO.setLastUpdatedDate("");
 
-				if (null != newYourCardSpecialItem.getClipTs()) {
+				if (null != ycsItem.getClipTs()) {
 					shoppingListItemVO
-							.setAddedDate(DateHelper.getISODate(newYourCardSpecialItem.getClipTs(), clientTimezone));
+							.setAddedDate(DateHelper.getISODate(ycsItem.getClipTs(), clientTimezone));
 				}
-				if (null != newYourCardSpecialItem.getLastUpdTs()) {
+				if (null != ycsItem.getLastUpdTs()) {
 					shoppingListItemVO.setLastUpdatedDate(
-							DateHelper.getISODate(newYourCardSpecialItem.getLastUpdTs(), clientTimezone));
+							DateHelper.getISODate(ycsItem.getLastUpdTs(), clientTimezone));
 				}
 
 				if (null != clubPrice.getEndDt()) {
@@ -109,9 +109,9 @@ public class YCSDetailsProvider implements ItemDetailsProvider<ClubPrice> {
 					shoppingListItemVO.setCategoryId(clubPrice.getCategoryId().toString());
 				}
 
-				if (null != newYourCardSpecialItem.getCheckedId()) {
+				if (null != ycsItem.getCheckedId()) {
 					shoppingListItemVO.setChecked(
-							newYourCardSpecialItem.getCheckedId().equalsIgnoreCase(Constants.YES));
+							ycsItem.getCheckedId().equalsIgnoreCase(Constants.YES));
 				}
 			}
 		}

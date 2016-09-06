@@ -40,6 +40,8 @@ public class EmailDispatcher implements Runnable {
 	private String J4U_IMAGE_URL;
 	private String YCS_IMAGE_URL;
 	private String YCS_IMAGE_EXT;
+	private String WS_IMAGE_URL;
+	private String WS_IMAGE_EXT;
 	
 	// the savings suffix
 	private static Map<String, String> savingsSuffix;
@@ -78,7 +80,7 @@ public class EmailDispatcher implements Runnable {
 	
 	public EmailDispatcher(EmailBroker emailBroker, StoreCache storeCache, List<ShoppingListItemVO> items, 
 			MailListVO mailListVO, String bannerId, EmailInformation slNotification, String ycsStoreId, 
-			String j4UImageUrl, String ycsImageUrl, String ycsImageExt) {
+			String j4UImageUrl, String ycsImageUrl, String ycsImageExt, String wsImageUrl, String wsImageExt) {
 		
 		this.emailBroker = emailBroker;
 		this.storeCache = storeCache;
@@ -90,6 +92,8 @@ public class EmailDispatcher implements Runnable {
 		this.J4U_IMAGE_URL = j4UImageUrl;
 		this.YCS_IMAGE_URL = ycsImageUrl;
 		this.YCS_IMAGE_EXT = ycsImageExt;
+		this.WS_IMAGE_URL = wsImageUrl;
+		this.WS_IMAGE_EXT = wsImageExt;
 		
 	}
 
@@ -205,9 +209,9 @@ public class EmailDispatcher implements Runnable {
 
 							if (Constants.J4U.contains(currentItem.getItemType())) {
 								imageUrl.append(J4U_IMAGE_URL);
+								imageUrl.append(currentItem.getImage());
+								shoppingListItemDetail.setImage(imageUrl.toString());
 							}
-							imageUrl.append(currentItem.getImage());
-							shoppingListItemDetail.setImage(imageUrl.toString());
 						}
 
 						String itemTitle = currentItem.getTitle() == null ? null : currentItem.getTitle();
@@ -235,14 +239,13 @@ public class EmailDispatcher implements Runnable {
 							if (null == currentItem.getImage()) {
 								StringBuffer imageUrl = new StringBuffer();
 
-								String imageURL = YCS_IMAGE_URL + currentItem.getReferenceId() + YCS_IMAGE_EXT;
-								LOGGER.debug("YCS Image Path: " + imageURL);
-								if (canImageLoad(imageURL)) {
-									imageUrl.append(imageURL);
+								imageUrl.append(YCS_IMAGE_URL).append(currentItem.getReferenceId()).append(YCS_IMAGE_EXT);
+								LOGGER.debug("YCS Image Path: " + imageUrl.toString());
+								if (canImageLoad(imageUrl.toString())) {
+									
+									LOGGER.debug("YCS Set Image Path: " + imageUrl.toString());
+									shoppingListItemDetail.setImage(imageUrl.toString());
 								}
-
-								LOGGER.debug("YCS Set Image Path: " + imageUrl.toString());
-								shoppingListItemDetail.setImage(imageUrl.toString());
 							}
 
 							if (currentItem.getItemType()
@@ -285,6 +288,30 @@ public class EmailDispatcher implements Runnable {
 							shoppingListItemDetail.setType(types.get(currentItem.getItemType()));
 							shoppingListItemDetail.setSavings(
 									savingsSuffix.get(currentItem.getItemType()) + currentItem.getSavingsValue());
+						} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
+							
+							if (null != currentItem.getImage()) {
+								StringBuffer imageUrl = new StringBuffer();
+
+								imageUrl.append(WS_IMAGE_URL).append(currentItem.getImage()).append(WS_IMAGE_EXT);
+								LOGGER.debug("WS Image Path: " + imageUrl.toString());
+								if (canImageLoad(imageUrl.toString())) {
+									
+									LOGGER.debug("WS Set Image Path: " + imageUrl.toString());
+									shoppingListItemDetail.setImage(imageUrl.toString());
+								}
+							}
+						} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.LANDING_PAGE_ITEM.toString())) {
+							
+							if (null != currentItem.getImage()) {
+								
+								LOGGER.debug("ELP Image Path: " + currentItem.getImage());
+								if (canImageLoad(currentItem.getImage())) {
+									
+									LOGGER.debug("ELP Set Image Path: " + currentItem.getImage());
+									shoppingListItemDetail.setImage(currentItem.getImage());
+								}
+							}
 						}
 
 						items.add(shoppingListItemDetail);

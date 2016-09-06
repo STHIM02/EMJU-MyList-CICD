@@ -15,8 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
@@ -39,6 +37,7 @@ import com.safeway.app.emju.mylist.dao.ShoppingListDAO;
 import com.safeway.app.emju.mylist.dao.StoreDAO;
 import com.safeway.app.emju.mylist.email.EmailDispatcher;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
+import com.safeway.app.emju.mylist.helper.ExecutionContextHelper;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.CategoryHierarchyVO;
 import com.safeway.app.emju.mylist.model.HeaderVO;
@@ -53,6 +52,7 @@ import com.safeway.app.emju.util.GenericConstants;
 import play.Configuration;
 import play.Play;
 import play.libs.F.Promise;
+import scala.concurrent.ExecutionContext;
 
 public class ShoppingListServiceImp implements ShoppingListService {
 
@@ -61,6 +61,9 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private static final String J4U_IMAGE_URL;
 	private static final String YCS_IMAGE_URL;
 	private static final String YCS_IMAGE_EXT;
+	private static final String WS_IMAGE_URL;
+	private static final String WS_IMAGE_EXT;
+	private static final int LOG_TIMEOUT;
 
 	static {
 		
@@ -68,6 +71,9 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		J4U_IMAGE_URL = config.getString("j4u.offer.image.url");
 		YCS_IMAGE_URL = config.getString("j4u.ycs.image.url");
 		YCS_IMAGE_EXT = config.getString("j4u.ycs.image.ext");
+		WS_IMAGE_URL = config.getString("j4u.ws.image.url");
+		WS_IMAGE_EXT = config.getString("j4u.ws.image.ext");
+		LOG_TIMEOUT = config.getInt("emju.app.mylist.log.timeout");
 	}
 
 	private StoreDAO storeDAO;
@@ -144,6 +150,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			}
 
 			Map<String, Map<String, ShoppingListItem>> shoppingListItemsMap = new HashMap<String, Map<String, ShoppingListItem>>();
+			Map<String, Integer> logMap = new HashMap<String, Integer>();
 
 			if (!filterAllItems) {
 				if (ValidationHelper.isNonEmpty(ycsStoreId)) {
@@ -158,6 +165,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			for (ItemTypeCode itemType : ItemTypeCode.values()) {
 
 				shoppingListItemsMap.put(itemType.toString(), new HashMap<String, ShoppingListItem>());
+				logMap.put(itemType.toString(), 0);
 			}
 
 			LOGGER.debug("Retrieving redeemed offers");
@@ -181,14 +189,19 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			long startTime = System.currentTimeMillis();
 			
 			processShoppingList(shoppingListItems, shoppingListItemsMap, redeemedOfferList, itemIdsList,
-					hasItemIdFilter, versionValues, fromTime, deletedItems, Integer.valueOf(ycsStoreId));
+					hasItemIdFilter, versionValues, fromTime, deletedItems, Integer.valueOf(ycsStoreId), logMap);
 			
 			long endTime = System.currentTimeMillis();
 			
-			if((endTime - startTime) > 1000) {
+			if((endTime - startTime) > LOG_TIMEOUT) {
 				
 				LOGGER.error("processShoppingList method took " + (endTime - startTime) + " milliseconds "
 						+ "to process " + shoppingListItems.size() + " shopping list items");
+				LOGGER.error("The distribution of item types are: ");
+				for(Entry<String, Integer> entry : logMap.entrySet()) {
+					LOGGER.error("Total of " + entry.getKey() + " retrived: " + entry.getValue() + 
+							", total valid items: " + shoppingListItemsMap.get(entry.getKey()).size());
+				}
 			}
 
 			List<ShoppingListItemVO> newSLItemVoSet = new ArrayList<ShoppingListItemVO>();
@@ -364,7 +377,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	private void processShoppingList(List<ShoppingListItem> shoppingListItems,
 			Map<String, Map<String, ShoppingListItem>> shoppingListItemsMap, List<Long> redeemedOfferList,
 			List<String> itemIdsList, boolean hasItemIdFilter, boolean[] versionValues, Date fromTime,
-			List<ShoppingListItemVO> deletedItems, Integer storeId) {
+			List<ShoppingListItemVO> deletedItems, Integer storeId, Map<String, Integer> logMap) {
 
 		boolean canBeProcess = false;
 		String itemTypeCd = null;
@@ -386,13 +399,13 @@ public class ShoppingListServiceImp implements ShoppingListService {
 				itemTypeCd = shoppingListItem.getItemTypeCd();
 				itemTypeCd = itemTypeCd.equals("MF") || itemTypeCd.equals("SC")
 						? Constants.ItemTypeCode.COUPON_ITEM.toString() : itemTypeCd;
-				LOGGER.debug("The item type being processed is " + itemTypeCd);
 				itemId = shoppingListItem.getItemId();
 				shoppingListItemId = shoppingListItem.getItemRefId();
 				clipId = shoppingListItem.getClipId();
 				itemStoreId = shoppingListItem.getStoreId();
 				itemMap = shoppingListItemsMap.get(itemTypeCd);
-				LOGGER.debug("The map is " + itemMap);
+				
+				logMap.put(itemTypeCd, logMap.get(itemTypeCd) + 1);
 
 				if (fromTime == null || fromTime.before(shoppingListItem.getLastUpdTs())) {
 					// For CC, PD
@@ -446,7 +459,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 							if (shoppingListItem.getItemEndDate().after(currentTime)
 									&& itemStoreId.intValue() == storeId.intValue()) {
 
-								mapKey = shoppingListItemId;
+								mapKey = itemId;
 								canBeProcess = true;
 							}
 						}
@@ -515,7 +528,8 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 				} else if (itemType.equals(ItemTypeCode.COUPON_ITEM.toString())
 						|| itemType.equals(ItemTypeCode.PERSONAL_DEAL_ITEM.toString())
-						|| itemType.equals(ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
+						|| itemType.equals(ItemTypeCode.CLUB_SPECIAL_ITEM.toString())
+						|| itemType.equals(ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
 
 					offerDetails.put(itemType, itemDetaislService.getAsyncDetails(itemType, itemMap, shoppingListVO));
 
@@ -547,8 +561,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		Map<String, Integer> itemByNumbers = new HashMap<String, Integer>();
 
 		for (Entry<String, Map<String, ShoppingListItem>> entry : shoppingListItemsMap.entrySet()) {
-
-			LOGGER.debug("Ordering items: " + entry.getKey() + " size: " + entry.getValue().size());
+			
 			itemByNumbers.put(entry.getKey(), entry.getValue().size());
 		}
 
@@ -684,10 +697,9 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		
 		EmailDispatcher dispatcher = new EmailDispatcher(emailBroker, storeCache, items, 
 				mailListVO, banner, slNotification, ycsStoreId, J4U_IMAGE_URL, 
-				YCS_IMAGE_URL, YCS_IMAGE_EXT); 
-		Executor executor = Executors.newSingleThreadExecutor();
+				YCS_IMAGE_URL, YCS_IMAGE_EXT, WS_IMAGE_URL, WS_IMAGE_EXT); 
+		ExecutionContext executor = ExecutionContextHelper.getContext("play.akka.actor.email-context");
 		executor.execute(dispatcher);
-
 	}
 
 }

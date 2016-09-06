@@ -20,7 +20,7 @@
 			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"} [%level] [%thread] %c: %message%n%xException</pattern>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>ERROR</level>
+			<level>DEBUG</level>
 		</filter>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- rollover daily -->

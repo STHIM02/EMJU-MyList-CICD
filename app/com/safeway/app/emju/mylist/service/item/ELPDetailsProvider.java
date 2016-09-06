@@ -73,6 +73,10 @@ public class ELPDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 			if (null != elpItem.getItemTitle()) {
 				shoppingListItemVO.setTitle(elpItem.getItemTitle());
 			}
+			
+			if (null != elpItem.getItemImage()) {
+				shoppingListItemVO.setImage(elpItem.getItemImage());
+			}
 		}
 
 		return shoppingListItemVO;
