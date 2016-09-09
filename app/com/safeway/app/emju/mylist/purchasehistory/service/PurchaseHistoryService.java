@@ -479,7 +479,7 @@ public class PurchaseHistoryService {
 	
 	                offerRefId = offerDetail.getOfferProgramCd()+"~"+offerId;
 	                // Get OfferClipStatus for the offer
-	                OfferClipStatus offerClipStatus = offerClipListStatusMap.get(offerRefId);
+	                OfferClipStatus offerClipStatus = offerClipListStatusMap.get(offerId);
 	
 	
 	                AllocatedOffer allocatedOffer = null;
