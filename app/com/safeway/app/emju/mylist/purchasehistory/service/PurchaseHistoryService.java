@@ -466,6 +466,7 @@ public class PurchaseHistoryService {
             
             if (null != offerIdList) {
 
+            	String offerRefId = null;
 	            for (Long offerId : offerIdList) {
 	
 	                // check if offer is in OfferCache
@@ -476,6 +477,7 @@ public class PurchaseHistoryService {
 	                    continue;
 	                }
 	
+	                offerRefId = offerDetail.getOfferProgramCd()+"~"+offerId;
 	                // Get OfferClipStatus for the offer
 	                OfferClipStatus offerClipStatus = offerClipListStatusMap.get(offerId);
 	

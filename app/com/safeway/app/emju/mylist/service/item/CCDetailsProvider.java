@@ -39,17 +39,21 @@ public class CCDetailsProvider extends OFRDetailsProvider<OfferDetail> {
 		LOGGER.debug("After getting offer details from cache " + offerDetailMap);
 		
 		Map<String, ShoppingListItemVO> offerItemsMap = new HashMap<String, ShoppingListItemVO>();
+		String clientTimeZone = null;
+		Date offerEndDate = null;
+		Long offerId = null;
 		
 		try {
-			String clientTimeZone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
+			clientTimeZone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
 			Long clientDate = DateHelper.getClientCurrDateInDBLocaleMS(clientTimeZone);
 			Date currClientDate = new Date(clientDate);
 			
 			for (Entry<Long, OfferDetail> entry : offerDetailMap.entrySet()) {
 	
-				Long offerId = entry.getKey();
+				offerId = entry.getKey();
 				OfferDetail offerDetail = entry.getValue();
-				if(currClientDate.after(offerDetail.getOfferEffectiveEndDt())) {
+				offerEndDate = offerDetail.getOfferEffectiveEndDt();
+				if(currClientDate.after(offerEndDate)) {
 					continue;
 				}
 				
@@ -58,7 +62,8 @@ public class CCDetailsProvider extends OFRDetailsProvider<OfferDetail> {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception-->CCDetailsProvider>>setOfferDetails-->  "
-					+ e.getMessage());
+					+ e.getMessage() + " with clientTimeZone = " + clientTimeZone + 
+					" on offerId = " + offerId + " with OfferEffectiveEndDt = " + offerEndDate);
 			throw new ApplicationException(FaultCodeBase.EMLS_UNABLE_TO_PROCESS, null, null);
 		}
 		LOGGER.info("CCDetailsProvider setOfferDetails <<");
