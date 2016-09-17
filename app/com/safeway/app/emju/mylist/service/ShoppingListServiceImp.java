@@ -215,6 +215,15 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			shoppingListVO.setDeletedItems(deletedItems);
 
 			returnShoppingListVOList.add(shoppingListVO);
+			
+			if(ValidationHelper.isNonEmpty(shoppingListVO.getUpdateTTLItem())) {
+				
+				ListItemMaintainanceService maintainanceService = 
+						new ListItemMaintainanceService(shoppingListVO.getUpdateTTLItem(), shoppingListDAO);
+				
+				ExecutionContext executor = ExecutionContextHelper.getContext("play.akka.actor.ttl-context");
+				executor.execute(maintainanceService);
+			}
 
 			LOGGER.info("Final ShoppingListsVO Created: " + returnShoppingListVOList);
 			if (shoppingListVO.getItemIds() == null) {

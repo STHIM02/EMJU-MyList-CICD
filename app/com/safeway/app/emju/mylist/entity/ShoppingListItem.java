@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.datastax.driver.mapping.annotations.ClusteringColumn;
 import com.datastax.driver.mapping.annotations.Column;
+import com.datastax.driver.mapping.annotations.Computed;
 import com.datastax.driver.mapping.annotations.PartitionKey;
 import com.datastax.driver.mapping.annotations.Table;
 
@@ -90,6 +91,9 @@ public class ShoppingListItem {
 	
 	@Column(name = "item_image")
 	private String itemImage;
+	
+	@Computed("ttl(clip_id)")
+	private Integer ttl;
 	
 	public String getRetailCustomerId() {
 		return retailCustomerId;
@@ -289,6 +293,14 @@ public class ShoppingListItem {
 
 	public void setItemImage(String itemImage) {
 		this.itemImage = itemImage;
+	}
+
+	public Integer getTtl() {
+		return ttl;
+	}
+
+	public void setTtl(Integer ttl) {
+		this.ttl = ttl;
 	}
 
 	@Override

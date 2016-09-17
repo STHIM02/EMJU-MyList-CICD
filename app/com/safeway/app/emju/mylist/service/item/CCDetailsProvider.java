@@ -42,6 +42,7 @@ public class CCDetailsProvider extends OFRDetailsProvider<OfferDetail> {
 		String clientTimeZone = null;
 		Date offerEndDate = null;
 		Long offerId = null;
+		String error = null;
 		
 		try {
 			clientTimeZone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
@@ -53,17 +54,23 @@ public class CCDetailsProvider extends OFRDetailsProvider<OfferDetail> {
 				offerId = entry.getKey();
 				OfferDetail offerDetail = entry.getValue();
 				offerEndDate = offerDetail.getOfferEffectiveEndDt();
-				if(currClientDate.after(offerEndDate)) {
-					continue;
+				
+				if(offerEndDate != null) {
+					if(currClientDate.after(offerEndDate)) {
+						continue;
+					}
+				} else {
+					error = "Error on offerId = " + offerId + " with OfferEffectiveEndDt = " + offerEndDate;
+					LOGGER.error(FaultCodeBase.CACHE_READ_FAILURE, error, new Exception(error), false);
 				}
+				
 				
 				offerItemsMap.put(offerId.toString(),
 						getOfferItemDefinitions(offerDetail, itemMap.get(Long.toString(offerId)), shoppingListVO));
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception-->CCDetailsProvider>>setOfferDetails-->  "
-					+ e.getMessage() + " with clientTimeZone = " + clientTimeZone + 
-					" on offerId = " + offerId + " with OfferEffectiveEndDt = " + offerEndDate);
+					+ e.getMessage() + " with clientTimeZone = " + clientTimeZone);
 			throw new ApplicationException(FaultCodeBase.EMLS_UNABLE_TO_PROCESS, null, null);
 		}
 		LOGGER.info("CCDetailsProvider setOfferDetails <<");

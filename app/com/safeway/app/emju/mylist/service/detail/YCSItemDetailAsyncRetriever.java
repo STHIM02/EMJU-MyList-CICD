@@ -1,6 +1,7 @@
 package com.safeway.app.emju.mylist.service.detail;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import com.google.inject.Inject;
 import com.safeway.app.emju.allocation.pricing.dao.ClubPriceDAO;
 import com.safeway.app.emju.allocation.pricing.entity.ClubPrice;
 import com.safeway.app.emju.exception.ApplicationException;
+import com.safeway.app.emju.helper.DataHelper;
 import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
@@ -59,6 +61,7 @@ public class YCSItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetrieve
 		LOGGER.debug("YCS Items found: " + itemMap.keySet());
 		Map<Long, ClubPrice> ycsPrices = new HashMap<Long, ClubPrice>();
 		List<Long> scanCodes = new ArrayList<Long>();
+		List<String> itemIds = new ArrayList<String>();
 		String timeZone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
 		Integer storeId = shoppingListVO.getHeaderVO().getPreferredStore().getStoreId();
 
@@ -75,10 +78,32 @@ public class YCSItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetrieve
 			entity = ycsPricesByStoreId.get(scanCode);
 			if(entity != null) {
 				ycsPrices.put(scanCode, entity);
+			} else {
+				itemIds.add(scanCode.toString());
 			}
 		}
 		
+		fillUpdatableItems(shoppingListVO, itemMap, itemIds);
+		
 		return ycsPrices;
+	}
+	
+	private void fillUpdatableItems(ShoppingListVO shoppingListVO, Map<String, ShoppingListItem> itemMap,
+			List<String> itemIds) {
+		
+		ShoppingListItem shoppingListItem = null;
+		Integer ttl = null;
+		
+		for(String itemId : itemIds) {
+			
+			shoppingListItem = itemMap.get(itemId);
+			if(shoppingListItem.getTtl() == null){
+				
+				ttl = DataHelper.getTTLsetup(new Date(), 0, 14);
+				shoppingListItem.setTtl(ttl);
+				shoppingListVO.getUpdateTTLItem().add(shoppingListItem);
+			}
+		}
 	}
 
 }

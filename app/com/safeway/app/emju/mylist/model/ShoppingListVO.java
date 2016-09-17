@@ -1,13 +1,15 @@
 package com.safeway.app.emju.mylist.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties({"headerVO"})
+@JsonIgnoreProperties({"headerVO", "updateTTLItem"})
 public class ShoppingListVO {
 
 	private String id;
@@ -19,6 +21,7 @@ public class ShoppingListVO {
 	private HierarchyVO hierarchies;
 	private List<ErrorVO> errors;
 	private String[] itemIds;
+	private List<ShoppingListItem> updateTTLItem = new ArrayList<ShoppingListItem>();
 	
 	public String getId() {
 		return id;
@@ -76,5 +79,11 @@ public class ShoppingListVO {
 		if (itemIds != null) {
 			this.itemIds = Arrays.copyOf(itemIds, itemIds.length);
 		}
+	}
+	public List<ShoppingListItem> getUpdateTTLItem() {
+		return updateTTLItem;
+	}
+	public void setUpdateTTLItem(List<ShoppingListItem> updateTTLItem) {
+		this.updateTTLItem = updateTTLItem;
 	}	
 }

@@ -3,6 +3,7 @@ package com.safeway.app.emju.mylist.service.item;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.safeway.app.emju.allocation.dao.PurchasedItemDAO;
 import com.safeway.app.emju.allocation.entity.PurchasedItem;
 import com.safeway.app.emju.cache.entity.OfferDetail;
 import com.safeway.app.emju.exception.ApplicationException;
+import com.safeway.app.emju.helper.DataHelper;
 import com.safeway.app.emju.helper.ValidationHelper;
 import com.safeway.app.emju.mylist.comparator.OfferComparator;
 import com.safeway.app.emju.mylist.constant.Constants;
@@ -53,6 +55,7 @@ public class UPCDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 		Long hhid = Long.valueOf(shoppingListVO.getHeaderVO().getSwyhouseholdid());
 		Map<String, ShoppingListItemVO> stndItemsMap = new HashMap<String, ShoppingListItemVO>();
 		Map<String, List<AllocatedOffer>> offers = null;
+		Integer ttl = null;
 
 		ShoppingListItemVO shoppingListItemVO = null;
 		ShoppingListItem productItem = null;
@@ -73,12 +76,21 @@ public class UPCDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 		for (Entry<String, ShoppingListItem> entry : itemMap.entrySet()) {
 
+			productItem = entry.getValue();
+			
 			if(purchaseMap.get(Long.valueOf(entry.getKey())) == null) {
 				
+				if(productItem.getTtl() == null) {
+					
+					ttl = DataHelper.getTTLsetup(new Date(), 0, 1);
+					productItem.setTtl(ttl);
+					shoppingListVO.getUpdateTTLItem().add(productItem);
+				}
 				continue;
 			}
+			
 			shoppingListItemVO = new ShoppingListItemVO();
-			productItem = entry.getValue();
+			
 			offers = null;
 			if (matchedOffers != null) {
 				offers = matchedOffers.get(entry.getKey());

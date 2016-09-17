@@ -10,9 +10,8 @@ import com.safeway.app.emju.mylist.model.ShoppingListVO;
 @ImplementedBy(ShoppingListDAOImp.class)
 public interface ShoppingListDAO {
 	
-	List<ShoppingListItem> getShoppingListItems(ShoppingListVO shoppingListVO, 
-			String itemTypeCd, Integer selectedStoreId) throws ApplicationException;
+	public List<ShoppingListItem> getShoppingListItems(ShoppingListVO shoppingListVO) throws ApplicationException;
 	
-	List<ShoppingListItem> getShoppingListItems(ShoppingListVO shoppingListVO) throws ApplicationException;
+	public void insertShoppingListItems(List<ShoppingListItem> shoppingListItems) throws ApplicationException;
 
 }
