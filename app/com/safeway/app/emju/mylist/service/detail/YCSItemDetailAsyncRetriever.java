@@ -101,7 +101,7 @@ public class YCSItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetrieve
 				
 				ttl = DataHelper.getTTLsetup(new Date(), 0, 14);
 				shoppingListItem.setTtl(ttl);
-				shoppingListVO.getUpdateTTLItem().add(shoppingListItem);
+				shoppingListVO.getUpdateYCSItem().add(shoppingListItem);
 			}
 		}
 	}

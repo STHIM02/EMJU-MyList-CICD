@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties({"headerVO", "updateTTLItem"})
+@JsonIgnoreProperties({"headerVO", "updateUPCItem", "updateYCSItem"})
 public class ShoppingListVO {
 
 	private String id;
@@ -21,7 +21,8 @@ public class ShoppingListVO {
 	private HierarchyVO hierarchies;
 	private List<ErrorVO> errors;
 	private String[] itemIds;
-	private List<ShoppingListItem> updateTTLItem = new ArrayList<ShoppingListItem>();
+	private List<ShoppingListItem> updateUPCItem = new ArrayList<ShoppingListItem>();
+	private List<ShoppingListItem> updateYCSItem = new ArrayList<ShoppingListItem>();
 	
 	public String getId() {
 		return id;
@@ -80,10 +81,16 @@ public class ShoppingListVO {
 			this.itemIds = Arrays.copyOf(itemIds, itemIds.length);
 		}
 	}
-	public List<ShoppingListItem> getUpdateTTLItem() {
-		return updateTTLItem;
+	public List<ShoppingListItem> getUpdateUPCItem() {
+		return updateUPCItem;
 	}
-	public void setUpdateTTLItem(List<ShoppingListItem> updateTTLItem) {
-		this.updateTTLItem = updateTTLItem;
+	public void setUpdateUPCItem(List<ShoppingListItem> updateUPCItem) {
+		this.updateUPCItem = updateUPCItem;
+	}
+	public List<ShoppingListItem> getUpdateYCSItem() {
+		return updateYCSItem;
+	}
+	public void setUpdateYCSItem(List<ShoppingListItem> updateYCSItem) {
+		this.updateYCSItem = updateYCSItem;
 	}	
 }

@@ -84,7 +84,7 @@ public class UPCDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 					
 					ttl = DataHelper.getTTLsetup(new Date(), 0, 1);
 					productItem.setTtl(ttl);
-					shoppingListVO.getUpdateTTLItem().add(productItem);
+					shoppingListVO.getUpdateYCSItem().add(productItem);
 				}
 				continue;
 			}

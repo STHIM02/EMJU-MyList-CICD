@@ -216,14 +216,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 			returnShoppingListVOList.add(shoppingListVO);
 			
-			if(ValidationHelper.isNonEmpty(shoppingListVO.getUpdateTTLItem())) {
-				
-				ListItemMaintainanceService maintainanceService = 
-						new ListItemMaintainanceService(shoppingListVO.getUpdateTTLItem(), shoppingListDAO);
-				
-				ExecutionContext executor = ExecutionContextHelper.getContext("play.akka.actor.ttl-context");
-				executor.execute(maintainanceService);
-			}
+			setUpdatableTTLItems(shoppingListVO);
 
 			LOGGER.info("Final ShoppingListsVO Created: " + returnShoppingListVOList);
 			if (shoppingListVO.getItemIds() == null) {
@@ -351,6 +344,26 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			throw new ApplicationException(FaultCodeBase.EMLS_NO_LIST_FOUND, null, null);
 		}
 
+	}
+	
+	private void setUpdatableTTLItems(ShoppingListVO shoppingListVO) {
+		
+		List<ShoppingListItem> updatebleItems = new ArrayList<ShoppingListItem>();
+		
+		if(ValidationHelper.isNonEmpty(shoppingListVO.getUpdateYCSItem())) {
+			updatebleItems.addAll(shoppingListVO.getUpdateYCSItem());
+		}
+		if(ValidationHelper.isNonEmpty(shoppingListVO.getUpdateUPCItem())) {
+			updatebleItems.addAll(shoppingListVO.getUpdateUPCItem());
+		}
+		if(ValidationHelper.isNonEmpty(updatebleItems)) {
+			
+			ListItemMaintainanceService maintainanceService = 
+					new ListItemMaintainanceService(updatebleItems, shoppingListDAO);
+			
+			ExecutionContext executor = ExecutionContextHelper.getContext("play.akka.actor.ttl-context");
+			executor.execute(maintainanceService);
+		}
 	}
 
 	private void setPreferredStoreInfo(HeaderVO headerVO, String selectedStoreId) {
