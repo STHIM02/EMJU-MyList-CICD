@@ -97,7 +97,7 @@ public class YCSItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetrieve
 		for(String itemId : itemIds) {
 			
 			shoppingListItem = itemMap.get(itemId);
-			if(shoppingListItem.getTtl() == null){
+			if(shoppingListItem.getTtl() == null || shoppingListItem.getTtl() == 0){
 				
 				ttl = DataHelper.getTTLsetup(new Date(), 0, 14);
 				shoppingListItem.setTtl(ttl);

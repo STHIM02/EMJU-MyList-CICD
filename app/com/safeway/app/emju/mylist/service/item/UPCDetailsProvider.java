@@ -80,7 +80,7 @@ public class UPCDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 			
 			if(purchaseMap.get(Long.valueOf(entry.getKey())) == null) {
 				
-				if(productItem.getTtl() == null) {
+				if(productItem.getTtl() == null || productItem.getTtl() == 0) {
 					
 					ttl = DataHelper.getTTLsetup(new Date(), 0, 1);
 					productItem.setTtl(ttl);

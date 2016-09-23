@@ -348,12 +348,15 @@ public class ShoppingListServiceImp implements ShoppingListService {
 	
 	private void setUpdatableTTLItems(ShoppingListVO shoppingListVO) {
 		
+		LOGGER.debug("Inside setUpdatableTTLItems with " +  shoppingListVO);
 		List<ShoppingListItem> updatebleItems = new ArrayList<ShoppingListItem>();
 		
 		if(ValidationHelper.isNonEmpty(shoppingListVO.getUpdateYCSItem())) {
+			LOGGER.info("YCS items to process: " + shoppingListVO.getUpdateYCSItem().size());
 			updatebleItems.addAll(shoppingListVO.getUpdateYCSItem());
 		}
 		if(ValidationHelper.isNonEmpty(shoppingListVO.getUpdateUPCItem())) {
+			LOGGER.info("UPC items to process: " + shoppingListVO.getUpdateUPCItem().size());
 			updatebleItems.addAll(shoppingListVO.getUpdateUPCItem());
 		}
 		if(ValidationHelper.isNonEmpty(updatebleItems)) {
