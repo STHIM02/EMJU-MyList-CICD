@@ -442,20 +442,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 								|| !redeemedOfferList.contains(Long.valueOf(itemId))) {
 							canBeProcess = true;
 						}
-
-//	Switch from refId to itemId					// For FF
-//					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.MANUAL_ITEM.toString())) {
-//
-//						mapKey = shoppingListItemId;
-//						canBeProcess = true;
-
-//						// For UPC
-//					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())) {
-//
-//						mapKey = itemId;
-//						canBeProcess = true;
-
-						// For YCS
+					// For YCS
 					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
 
 						if (itemStoreId.intValue() == storeId.intValue()) {

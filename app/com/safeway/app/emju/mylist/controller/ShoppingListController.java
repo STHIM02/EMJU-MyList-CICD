@@ -143,7 +143,7 @@ public class ShoppingListController extends Controller {
         	+ "Recovery Message:" + t.getMessage() 
         	+ "Recovery Cause:" + t.getCause());
             t.printStackTrace();
-            return status(401, Json.toJson(ExceptionUtil.getErrorResponse(t)));
+            return status(500, Json.toJson(ExceptionUtil.getErrorResponse(t)));
         }, controllerContext);
 		
 		return result;
@@ -187,7 +187,7 @@ public class ShoppingListController extends Controller {
         	+ "Recovery Message:" + t.getMessage() 
         	+ "Recovery Cause:" + t.getCause());
             t.printStackTrace();
-            return status(401, Json.toJson(ExceptionUtil.getErrorResponse(t)));
+            return status(500, Json.toJson(ExceptionUtil.getErrorResponse(t)));
         }, controllerContext);
 		
 		return result;
@@ -223,7 +223,7 @@ public class ShoppingListController extends Controller {
         	+ "Recovery Message:" + t.getMessage() 
         	+ "Recovery Cause:" + t.getCause());
             t.printStackTrace();
-            return status(401, Json.toJson(ExceptionUtil.getErrorResponse(t)));
+            return status(500, Json.toJson(ExceptionUtil.getErrorResponse(t)));
         }, controllerContext);
 		
 		return result;
