@@ -13,15 +13,16 @@ import com.safeway.app.emju.logging.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.safeway.app.emju.allocation.requestidentification.model.ProfileIdentifiers.ClientApiKey;
-import com.safeway.app.emju.authentication.annotation.TokenValidator;
+import com.safeway.app.emju.authentication.annotation.TokenValidatorAction;
+import com.safeway.app.emju.authentication.exception.OSSOServiceException;
 import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.exception.FaultCodeBase;
 import com.safeway.app.emju.helper.ValidationHelper;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.constant.Constants.ProfileDataRestrictions;
-import com.safeway.app.emju.mylist.dao.StoreDAO;
 import com.safeway.app.emju.mylist.exception.ExceptionUtil;
 import com.safeway.app.emju.mylist.helper.DateHelper;
+import com.safeway.app.emju.mylist.helper.ExecutionContextHelper;
 import com.safeway.app.emju.mylist.model.HeaderVO;
 import com.safeway.app.emju.mylist.model.ListCountVO;
 import com.safeway.app.emju.mylist.model.MailListVO;
@@ -40,6 +41,7 @@ import play.mvc.Controller;
 import play.mvc.Http.Context;
 import play.mvc.Http.Cookie;
 import play.mvc.Http.Cookies;
+import scala.concurrent.ExecutionContext;
 import play.mvc.Result;
 
 public class ShoppingListController extends Controller {
@@ -82,41 +84,55 @@ public class ShoppingListController extends Controller {
     }
     
     private ShoppingListService shoppingListService;
+    private TokenValidatorAction tokenValidatorAction;
     
     @Inject
-    public ShoppingListController(ShoppingListService shoppingListService, StoreDAO storeDAO) {
+    public ShoppingListController(ShoppingListService shoppingListService, TokenValidatorAction tokenValidatorAction) {
     	this.shoppingListService = shoppingListService;
+    	this.tokenValidatorAction = tokenValidatorAction;
     }
 	
-    @TokenValidator(userProfile = true)
 	public Promise<Result> getShoppingList(String details, String storeId, String timestamp) {
 		
 		Promise<Result> result = null;
 		LOGGER.info("Inside getShoppingList");
+		ExecutionContext controllerContext = 
+				ExecutionContextHelper.getContext("play.akka.actor.controller-context");
+		
 		result = Promise.promise((Function0<Result>) () -> {
 			
-			LOGGER.debug("Query parameters passed: ");
-			LOGGER.debug("details: " + details);
-			LOGGER.debug("storeId: " + storeId);
-			LOGGER.debug("timestamp: " + timestamp);
-			ShoppingVO shoppingVo = null;
-	        ShoppingListVO shoppingListVo = new ShoppingListVO();
-	        List<ShoppingListVO> shoppingLists = null;
-	        validateHeader(shoppingListVo, true, storeId);
-	        shoppingListVo.getHeaderVO().setDetails(details);
-	        shoppingListVo.getHeaderVO().setTimestamp(timestamp);
-	        shoppingLists = shoppingListService.getShoppingList(shoppingListVo);
-	        
-	        String clientTimezone = shoppingListVo.getHeaderVO().getTimeZone();
-            String sysTimestamp = DateHelper.getISODate(new Date(), clientTimezone);
-            
-	        shoppingVo = new ShoppingVO();
-            shoppingVo.setShoppingLists(shoppingLists);
-            shoppingVo.setLastDeltaTS(sysTimestamp);
-            
-            LOGGER.info("getShoppingList <<");
-            return ok(Json.toJson(shoppingVo));
-		});
+			try {
+				LOGGER.debug("Query parameters passed: ");
+				LOGGER.debug("details: " + details);
+				LOGGER.debug("storeId: " + storeId);
+				LOGGER.debug("timestamp: " + timestamp);
+				
+				injectProfileAttributes(Context.current());
+				
+				ShoppingVO shoppingVo = null;
+		        ShoppingListVO shoppingListVo = new ShoppingListVO();
+		        List<ShoppingListVO> shoppingLists = null;
+		        validateHeader(shoppingListVo, true, storeId);
+		        shoppingListVo.getHeaderVO().setDetails(details);
+		        shoppingListVo.getHeaderVO().setTimestamp(timestamp);
+		        shoppingLists = shoppingListService.getShoppingList(shoppingListVo);
+		        
+		        String clientTimezone = shoppingListVo.getHeaderVO().getTimeZone();
+	            String sysTimestamp = DateHelper.getISODate(new Date(), clientTimezone);
+	            
+		        shoppingVo = new ShoppingVO();
+	            shoppingVo.setShoppingLists(shoppingLists);
+	            shoppingVo.setLastDeltaTS(sysTimestamp);
+	            
+	            LOGGER.info("getShoppingList <<");
+	            return ok(Json.toJson(shoppingVo));
+			} catch(OSSOServiceException e){
+				return unauthorized(e.toString());
+			} catch(Exception e){
+				LOGGER.error("getShoppingList exception: " + e.getMessage(), e);
+				throw e;
+			}
+		}, controllerContext);
 		
 		result = result.recover((F.Function<Throwable, Result>) (final Throwable t) -> {
         	LOGGER.error("getShoppingList() - Recovery:"
@@ -124,32 +140,40 @@ public class ShoppingListController extends Controller {
         	+ "Recovery Cause:" + t.getCause());
             t.printStackTrace();
             return status(401, Json.toJson(ExceptionUtil.getErrorResponse(t)));
-        });
+        }, controllerContext);
 		
 		return result;
 	}
 	
-    @TokenValidator(userProfile = true)
 	public Promise<Result> getShoppingListCount(String storeId) {
 		
 		Promise<Result> result = null;
+		ExecutionContext controllerContext = 
+				ExecutionContextHelper.getContext("play.akka.actor.controller-context");
 		
 		result = Promise.promise((Function0<Result>) () -> {
 			
-			LOGGER.info("getShoppingListCount >>");
-			Integer iSLItemcount = 0;
-			
-	        ShoppingListVO shoppingListVo = new ShoppingListVO();
-	        validateHeader(shoppingListVo, true, storeId);	        
-	        ListCountVO countVO = new ListCountVO();
-	        
-	        if(ValidationHelper.isNonEmpty(storeId)) {
-	        	iSLItemcount = shoppingListService.getShoppingListCount(shoppingListVo, null);
-	        }
-	        countVO.setNoShoppingListItems(iSLItemcount);
-	        LOGGER.info("getShoppingListCount <<");
-	        return ok(Json.toJson(countVO));
-		});
+			try {
+				LOGGER.info("getShoppingListCount >>");
+				Integer iSLItemcount = 0;
+				
+		        ShoppingListVO shoppingListVo = new ShoppingListVO();
+		        validateHeader(shoppingListVo, true, storeId);	        
+		        ListCountVO countVO = new ListCountVO();
+		        
+		        if(ValidationHelper.isNonEmpty(storeId)) {
+		        	iSLItemcount = shoppingListService.getShoppingListCount(shoppingListVo, null);
+		        }
+		        countVO.setNoShoppingListItems(iSLItemcount);
+		        LOGGER.info("getShoppingListCount <<");
+		        return ok(Json.toJson(countVO));
+			} catch(OSSOServiceException e){
+				return unauthorized(e.toString());
+			} catch(Exception e){
+				LOGGER.error("getShoppingList exception: " + e.getMessage(), e);
+				throw e;
+			}
+		}, controllerContext);
 		
 		result = result.recover((F.Function<Throwable, Result>) (final Throwable t) -> {
         	LOGGER.error("getShoppingListCount() - Recovery:"
@@ -157,24 +181,32 @@ public class ShoppingListController extends Controller {
         	+ "Recovery Cause:" + t.getCause());
             t.printStackTrace();
             return status(401, Json.toJson(ExceptionUtil.getErrorResponse(t)));
-        });
+        }, controllerContext);
 		
 		return result;
 	}
 	
-    @TokenValidator(userProfile = true)
 	public Promise<Result> emailShoppingList(String storeId) {
 		
 		Promise<Result> result = null;
+		ExecutionContext controllerContext = 
+				ExecutionContextHelper.getContext("play.akka.actor.controller-context");
 		
 		result = Promise.promise((Function0<Result>) () -> {
-			LOGGER.info("emailShoppingList >>");
-			ShoppingListVO shoppingListVo = new ShoppingListVO();
-	        validateHeader(shoppingListVo, true, storeId);
-	        MailListVO mailListVO = new ObjectMapper().treeToValue(request().body().asJson(), MailListVO.class);
-	        shoppingListService.sendShoppingListMail(mailListVO, shoppingListVo.getHeaderVO());
-			return ok();
-		});
+			try{
+				LOGGER.info("emailShoppingList >>");
+				ShoppingListVO shoppingListVo = new ShoppingListVO();
+		        validateHeader(shoppingListVo, true, storeId);
+		        MailListVO mailListVO = new ObjectMapper().treeToValue(request().body().asJson(), MailListVO.class);
+		        shoppingListService.sendShoppingListMail(mailListVO, shoppingListVo.getHeaderVO());
+				return ok();
+			} catch(OSSOServiceException e){
+				return unauthorized(e.toString());
+			} catch(Exception e){
+				LOGGER.error("getShoppingList exception: " + e.getMessage(), e);
+				throw e;
+			}
+		}, controllerContext);
 		
 		result = result.recover((F.Function<Throwable, Result>) (final Throwable t) -> {
         	LOGGER.error("emailShoppingList() - Recovery:"
@@ -182,7 +214,7 @@ public class ShoppingListController extends Controller {
         	+ "Recovery Cause:" + t.getCause());
             t.printStackTrace();
             return status(401, Json.toJson(ExceptionUtil.getErrorResponse(t)));
-        });
+        }, controllerContext);
 		
 		return result;
 	}
@@ -447,5 +479,13 @@ public class ShoppingListController extends Controller {
         LOGGER.info("ProcessUtil:getSessionkey(): Session Key = " + sessionKey);
         return sessionKey;
     }
+	
+	private void injectProfileAttributes(final Context currentContext) throws Throwable {
+		Promise<Result> promiseResult = tokenValidatorAction.process(currentContext);
+		if(promiseResult != null){
+			Result result = promiseResult.get(9999999L);
+			throw new OSSOServiceException(FaultCodeBase.AUTHORIZATION_FAILURE, result.toString(), null);
+		}
+	}
 
 }

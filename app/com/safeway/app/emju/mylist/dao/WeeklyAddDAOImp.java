@@ -3,6 +3,7 @@ package com.safeway.app.emju.mylist.dao;
 import java.util.List;
 
 import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.exceptions.DriverException;
@@ -40,6 +41,7 @@ public class WeeklyAddDAOImp implements WeeklyAddDAO {
 			LOGGER.debug("Query to execute: " + sql);
 
             PreparedStatement select = connector.getSession().prepare(sql);
+            select.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
             BoundStatement boundStatement = new BoundStatement(select);
 
             ResultSet rs = connector.getSession().execute(boundStatement.bind(offerIds));

@@ -9,6 +9,7 @@ import com.datastax.driver.mapping.Result;
 import com.google.inject.Inject;
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.exceptions.DriverException;
@@ -56,6 +57,7 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
 			LOGGER.debug("Query to execute: " + sql);
 
             PreparedStatement select = connector.getSession().prepare(sql);
+            select.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
             BoundStatement boundStatement = new BoundStatement(select);
             
 			LOGGER.debug("Accessing database records with params custGUID " + custGUID + ", " +
@@ -84,6 +86,7 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
             MappingManager manager = connector.getMappingManager();
             Mapper<ShoppingListItem> mapper = manager.mapper(ShoppingListItem.class);
             BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
+            batch.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
             
             shoppingListItems.forEach((final ShoppingListItem item) -> {
                 batch.add(mapper.saveQuery(item));
