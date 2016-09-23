@@ -207,7 +207,7 @@ public class ShoppingListController extends Controller {
 				injectProfileAttributes(currentContext);
 				ShoppingListVO shoppingListVo = new ShoppingListVO();
 		        validateHeader(request, currentContext, shoppingListVo, true, storeId);
-		        MailListVO mailListVO = new ObjectMapper().treeToValue(request().body().asJson(), MailListVO.class);
+		        MailListVO mailListVO = new ObjectMapper().treeToValue(request.body().asJson(), MailListVO.class);
 		        shoppingListService.sendShoppingListMail(mailListVO, shoppingListVo.getHeaderVO());
 				return ok();
 			} catch(OSSOServiceException e){
@@ -255,7 +255,7 @@ public class ShoppingListController extends Controller {
         		LOGGER.debug("profileMap is: " + profileMap);
         	}
         	
-        	Cookies cookieMap = request().cookies();
+        	Cookies cookieMap = request.cookies();
         	String ccaOrswy = getHeaderKey(headermap.get(Constants.APP_KEY), headermap.get(Constants.AGENT_ID));
         	LOGGER.info("ccaOrswy is " + ccaOrswy);
         	String banner = null;
