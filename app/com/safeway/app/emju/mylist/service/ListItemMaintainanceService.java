@@ -26,6 +26,7 @@ public class ListItemMaintainanceService implements Runnable {
 
 		try {
 			
+			LOGGER.debug("Updating list of items: " + shoppingList);
 			shoppingListDAO.insertShoppingListItems(shoppingList);
 			
 		} catch(ApplicationException e) {
