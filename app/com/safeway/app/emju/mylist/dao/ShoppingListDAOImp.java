@@ -13,6 +13,7 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.mapping.Mapper;
+import com.datastax.driver.mapping.Mapper.Option;
 import com.datastax.driver.mapping.MappingManager;
 import com.safeway.app.emju.dao.connector.CassandraConnector;
 import com.safeway.app.emju.dao.exception.ConnectionException;
@@ -86,7 +87,7 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
             BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
             
             shoppingListItems.forEach((final ShoppingListItem item) -> {
-                batch.add(mapper.saveQuery(item));
+            	 batch.add(mapper.saveQuery(item, Option.ttl(item.getTtl())));
             });
             
             connector.getSession().execute(batch);
