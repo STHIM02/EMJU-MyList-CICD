@@ -41,6 +41,7 @@ import play.mvc.Controller;
 import play.mvc.Http.Context;
 import play.mvc.Http.Cookie;
 import play.mvc.Http.Cookies;
+import play.mvc.Http.Request;
 import scala.concurrent.ExecutionContext;
 import play.mvc.Result;
 
@@ -96,6 +97,9 @@ public class ShoppingListController extends Controller {
 		
 		Promise<Result> result = null;
 		LOGGER.info("Inside getShoppingList");
+		final Request request = request();
+		final Context currentContext = Context.current();
+		
 		ExecutionContext controllerContext = 
 				ExecutionContextHelper.getContext("play.akka.actor.controller-context");
 		
@@ -107,12 +111,12 @@ public class ShoppingListController extends Controller {
 				LOGGER.debug("storeId: " + storeId);
 				LOGGER.debug("timestamp: " + timestamp);
 				
-				injectProfileAttributes(Context.current());
+				injectProfileAttributes(currentContext);
 				
 				ShoppingVO shoppingVo = null;
 		        ShoppingListVO shoppingListVo = new ShoppingListVO();
 		        List<ShoppingListVO> shoppingLists = null;
-		        validateHeader(shoppingListVo, true, storeId);
+		        validateHeader(request, currentContext, shoppingListVo, true, storeId);
 		        shoppingListVo.getHeaderVO().setDetails(details);
 		        shoppingListVo.getHeaderVO().setTimestamp(timestamp);
 		        shoppingLists = shoppingListService.getShoppingList(shoppingListVo);
@@ -147,6 +151,8 @@ public class ShoppingListController extends Controller {
 	
 	public Promise<Result> getShoppingListCount(String storeId) {
 		
+		final Request request = request();
+		final Context currentContext = Context.current();
 		Promise<Result> result = null;
 		ExecutionContext controllerContext = 
 				ExecutionContextHelper.getContext("play.akka.actor.controller-context");
@@ -155,10 +161,11 @@ public class ShoppingListController extends Controller {
 			
 			try {
 				LOGGER.info("getShoppingListCount >>");
+				injectProfileAttributes(currentContext);
 				Integer iSLItemcount = 0;
 				
 		        ShoppingListVO shoppingListVo = new ShoppingListVO();
-		        validateHeader(shoppingListVo, true, storeId);	        
+		        validateHeader(request, currentContext, shoppingListVo, true, storeId);	        
 		        ListCountVO countVO = new ListCountVO();
 		        
 		        if(ValidationHelper.isNonEmpty(storeId)) {
@@ -188,6 +195,8 @@ public class ShoppingListController extends Controller {
 	
 	public Promise<Result> emailShoppingList(String storeId) {
 		
+		final Request request = request();
+		final Context currentContext = Context.current();
 		Promise<Result> result = null;
 		ExecutionContext controllerContext = 
 				ExecutionContextHelper.getContext("play.akka.actor.controller-context");
@@ -195,8 +204,9 @@ public class ShoppingListController extends Controller {
 		result = Promise.promise((Function0<Result>) () -> {
 			try{
 				LOGGER.info("emailShoppingList >>");
+				injectProfileAttributes(currentContext);
 				ShoppingListVO shoppingListVo = new ShoppingListVO();
-		        validateHeader(shoppingListVo, true, storeId);
+		        validateHeader(request, currentContext, shoppingListVo, true, storeId);
 		        MailListVO mailListVO = new ObjectMapper().treeToValue(request().body().asJson(), MailListVO.class);
 		        shoppingListService.sendShoppingListMail(mailListVO, shoppingListVo.getHeaderVO());
 				return ok();
@@ -220,8 +230,9 @@ public class ShoppingListController extends Controller {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void validateHeader(final ShoppingListVO shoppingListVO,
-	        boolean sessionTokenRequired, String selectedStoreId) throws ApplicationException {
+	private void validateHeader(final Request request, final Context currentContext,
+			final ShoppingListVO shoppingListVO, boolean sessionTokenRequired, 
+			String selectedStoreId) throws ApplicationException {
 		LOGGER.info("Start header validation >>");
 		FaultCodeBase error = null;
         HeaderVO headerVO = new HeaderVO();
@@ -234,13 +245,13 @@ public class ShoppingListController extends Controller {
         
         try {
         	
-        	headermap = request().headers();
+        	headermap = request.headers();
         	if(RUNTIME_MODE.equals(Constants.DEV_MODE)) {
         		LOGGER.debug("Dev Mode is on");
         		profileMap = headermap;
         	} else {
         		LOGGER.debug("No dev Mode is on");
-        		profileMap = (Map<String,String[]>) Context.current().args.get(GenericConstants.ARGS_USER_PROFILE);
+        		profileMap = (Map<String,String[]>) currentContext.args.get(GenericConstants.ARGS_USER_PROFILE);
         		LOGGER.debug("profileMap is: " + profileMap);
         	}
         	
