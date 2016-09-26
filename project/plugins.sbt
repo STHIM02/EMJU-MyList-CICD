@@ -17,5 +17,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-play-enhancer" % "1.1.0")
 
 // Play Eclipse plugin
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
-// SBT Release plugin
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.0")
+// CI process improvement plugins
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.3")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
