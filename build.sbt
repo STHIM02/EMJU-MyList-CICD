@@ -1,4 +1,5 @@
 import Dependencies._
+import ReleaseTransformations._
 
 name := """emju-mylist"""
 resolvers += "EMJU repository" at "http://albertsons-binrepo.westus.cloudapp.azure.com/artifactory/libs-release-local/"
@@ -13,19 +14,22 @@ scalaVersion := "2.11.7"
 
 releaseProcess := {
     Seq[ReleaseStep](
-        ReleaseTransformations.checkSnapshotDependencies,
-        ReleaseTransformations.inquireVersions,
-        ReleaseTransformations.runClean,
-        ReleaseTransformations.runTest,
-        ReleaseTransformations.setReleaseVersion,
-//        ReleaseTransformations.commitReleaseVersion,
-//        ReleaseTransformations.tagRelease,
-        ReleaseTransformations.publishArtifacts   //note ending comma removed, required if using all default steps
-//        ReleaseTransformations.setNextVersion       
-//        ReleaseTransformations.commitNextVersion,
-//        ReleaseTransformations.pushChanges
+        checkSnapshotDependencies,
+        inquireVersions,
+        runClean,
+        runTest,
+        setReleaseVersion,
+//        commitReleaseVersion,
+//        tagRelease,
+        publishArtifacts   //note ending comma removed, required if using all default steps
+//        setNextVersion       
+//        commitNextVersion,
+//        pushChanges
     )
 }
+
+//Disable commit check for no untracked files in working directory (requires release plug in version 1.0.3)
+releaseIgnoreUntrackedFiles := true
 
 //let build override previous versions
 isSnapshot := true
