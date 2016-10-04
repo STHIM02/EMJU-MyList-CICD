@@ -331,6 +331,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 			if (ValidationHelper.isNonEmpty(shoppingList.getItems())) {
 
+				cleanItemsInfo(shoppingList.getItems());
 				sendEmail(shoppingList.getItems(), mailListVO, headerVO.getBannner(), 
 						slNotification, ycsStoreId);
 				
@@ -345,7 +346,14 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		}
 
 	}
-	
+
+	private void cleanItemsInfo(List<ShoppingListItemVO> items) {
+		
+		items.forEach( item -> { 
+			item.setTitle(item.getTitle().replaceAll("%3F", ""));
+		});
+	}
+
 	private void setUpdatableTTLItems(ShoppingListVO shoppingListVO) {
 		
 		LOGGER.debug("Inside setUpdatableTTLItems with " +  shoppingListVO);
