@@ -349,9 +349,14 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 	private void cleanItemsInfo(List<ShoppingListItemVO> items) {
 		
-		items.forEach( item -> { 
-			item.setTitle(item.getTitle().replaceAll("%3F", ""));
-		});
+		if (items!=null) {
+			items.forEach( item -> { 
+				String title = item.getTitle();
+				if (ValidationHelper.isNonEmpty(title)) {
+					item.setTitle(title.replaceAll("%3F", ""));
+				}
+			});
+		}
 	}
 
 	private void setUpdatableTTLItems(ShoppingListVO shoppingListVO) {
