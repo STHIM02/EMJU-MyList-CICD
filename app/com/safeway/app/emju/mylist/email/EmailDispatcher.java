@@ -285,14 +285,12 @@ public class EmailDispatcher implements Runnable {
 								}
 							} else if (Constants.J4U_ADD.contains(currentItem.getItemType())) {
 
-								LOGGER.debug(">>1");
 								shoppingListItemDetail.setUsageLimit(usageLimits.get(currentItem.getUsage()));
 								shoppingListItemDetail.setType(types.get(currentItem.getItemType()));
 								shoppingListItemDetail.setSavings(
 										savingsSuffix.get(currentItem.getItemType()) + currentItem.getSavingsValue());
 							} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
 
-								LOGGER.debug(">>2");
 								if (null != currentItem.getImage()) {
 									StringBuffer imageUrl = new StringBuffer();
 	
@@ -306,7 +304,6 @@ public class EmailDispatcher implements Runnable {
 								}
 							} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.LANDING_PAGE_ITEM.toString())) {
 
-								LOGGER.debug(">>3");
 								if (null != currentItem.getImage()) {
 									
 									LOGGER.debug("ELP Image Path: " + currentItem.getImage());
@@ -318,7 +315,7 @@ public class EmailDispatcher implements Runnable {
 								}
 							}
 							else {
-								LOGGER.debug("nothing match the item type" + currentItem.getItemType());
+								LOGGER.debug("item type no match " + currentItem.getItemType());
 							}
 							
 							items.add(shoppingListItemDetail);
@@ -330,7 +327,10 @@ public class EmailDispatcher implements Runnable {
 				}
 			}
 		}
-		catch(Exception e) { e.printStackTrace();}
+		catch(Exception e) { 
+			e.printStackTrace();
+			LOGGER.error("err msg " + e.getMessage());
+		}
 
 		if (numberOfCategories != shoppingList.size()) {
 			shoppingList.add(shoppingListItemGroup);
