@@ -351,14 +351,22 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		
 		if (items!=null) {
 			items.forEach( item -> { 
-				if (item.getItemType().equals("FF")) {
+				if (item.getItemType().equals(Constants.ItemTypeCode.MANUAL_ITEM)) {
+					
 					if (ValidationHelper.isNonEmpty(item.getTitle())) {
-						item.setTitle(item.getTitle().replaceAll("%3F", ""));
-						LOGGER.debug("FF item title: " + item.getTitle());
+						String[] titleArray = item.getTitle().split("%3F");						
+						if (titleArray.length > 1) {
+							item.setTitle(titleArray[0]);
+							LOGGER.debug("FF item title: " + item.getTitle());
+						}
 					}
+					
 					if (ValidationHelper.isNonEmpty(item.getDescription())) {
-						item.setDescription(item.getDescription().replaceAll("%3F", ""));
-						LOGGER.debug("FF item description: " + item.getDescription());
+						String[] descArray = item.getDescription().split("%3F");
+						if (descArray.length > 1) {
+							item.setDescription(descArray[0]);
+							LOGGER.debug("FF item desc: " + item.getDescription());
+						}
 					}
 				}
 			});
