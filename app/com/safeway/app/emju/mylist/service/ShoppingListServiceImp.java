@@ -351,7 +351,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		
 		if (items!=null) {
 			items.forEach( item -> { 
-				if (item.getItemType().equals(Constants.ItemTypeCode.MANUAL_ITEM)) {
+				//if (item.getItemType().equals(Constants.ItemTypeCode.MANUAL_ITEM)) {
 					
 					if (ValidationHelper.isNonEmpty(item.getTitle())) {
 						String[] titleArray = item.getTitle().split("%3F");						
@@ -368,7 +368,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 							LOGGER.debug("FF item desc: " + item.getDescription());
 						}
 					}
-				}
+				//}
 			});
 		}
 	}
