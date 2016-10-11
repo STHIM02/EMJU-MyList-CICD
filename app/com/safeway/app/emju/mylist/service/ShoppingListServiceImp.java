@@ -427,6 +427,12 @@ public class ShoppingListServiceImp implements ShoppingListService {
 				itemId = shoppingListItem.getItemId();
 				shoppingListItemId = shoppingListItem.getItemRefId();
 				clipId = shoppingListItem.getClipId();
+				
+				if(clipId == null) {
+					LOGGER.error("Service has found an item with null Clip Id. Item Id = " + itemId);
+					continue;
+				}
+				
 				itemStoreId = shoppingListItem.getStoreId();
 				itemMap = shoppingListItemsMap.get(itemTypeCd);
 				
@@ -442,18 +448,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 								|| !redeemedOfferList.contains(Long.valueOf(itemId))) {
 							canBeProcess = true;
 						}
-
-//	Switch from refId to itemId					// For FF
-//					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.MANUAL_ITEM.toString())) {
-//
-//						mapKey = shoppingListItemId;
-//						canBeProcess = true;
-
-//						// For UPC
-//					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())) {
-//
-//						mapKey = itemId;
-//						canBeProcess = true;
 
 						// For YCS
 					} else if (itemTypeCd.equalsIgnoreCase(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
