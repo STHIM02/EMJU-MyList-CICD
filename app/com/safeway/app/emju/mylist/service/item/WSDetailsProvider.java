@@ -15,6 +15,7 @@ import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.helper.DateHelper;
+import com.safeway.app.emju.mylist.helper.DetailUtil;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.ShoppingListItemVO;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
@@ -80,7 +81,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 				shoppingListItemVO.setEndDate(DateHelper.getISODate(wsItem.getItemEndDate(), clientTimezone));
 			}
 			if (null != wsItem.getItemDesc()) {
-				shoppingListItemVO.setDescription(wsItem.getItemDesc());
+				shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F"));
 			}
 			if (null != wsItem.getItemTitle()) {
 				shoppingListItemVO.setTitle(wsItem.getItemTitle());
@@ -150,7 +151,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 					shoppingListItemVO.setEndDate(DateHelper.getISODate(wsItem.getItemEndDate(), clientTimezone));
 				}
 				if (null != wsItem.getItemDesc()) {
-					shoppingListItemVO.setDescription(wsItem.getItemDesc());
+					shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F"));
 				}
 				if (null != wsItem.getItemTitle()) {
 					shoppingListItemVO.setTitle(wsItem.getItemTitle());

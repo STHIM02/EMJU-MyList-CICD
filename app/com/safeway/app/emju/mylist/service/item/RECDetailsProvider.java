@@ -13,6 +13,7 @@ import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.helper.DateHelper;
+import com.safeway.app.emju.mylist.helper.DetailUtil;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.ShoppingListItemVO;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
@@ -60,7 +61,7 @@ public class RECDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			}
 
-			shoppingListItemVO.setDescription(recipelItem.getItemDesc());
+			shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(recipelItem.getItemDesc(), "%3F"));
 			shoppingListItemVO.setQuantity(recipelItem.getItemQuantity());
 			if (null != recipelItem.getCheckedId()) {
 				shoppingListItemVO.setChecked(recipelItem.getCheckedId().equalsIgnoreCase(Constants.YES));

@@ -331,7 +331,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 			if (ValidationHelper.isNonEmpty(shoppingList.getItems())) {
 
-				cleanItemsInfo(shoppingList.getItems());
 				sendEmail(shoppingList.getItems(), mailListVO, headerVO.getBannner(), 
 						slNotification, ycsStoreId);
 				
@@ -345,30 +344,6 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			throw new ApplicationException(FaultCodeBase.EMLS_NO_LIST_FOUND, null, null);
 		}
 
-	}
-
-	private void cleanItemsInfo(List<ShoppingListItemVO> items) {
-		
-		if (items!=null) {
-			items.forEach( item -> { 
-				
-				/*if (ValidationHelper.isNonEmpty(item.getTitle())) {
-					String[] titleArray = item.getTitle().split("%3F");						
-					if (titleArray.length > 1) {
-						item.setTitle(titleArray[0]);
-						LOGGER.debug("item title after rm %3F: " + item.getTitle());
-					}
-				}*/
-				
-				if (ValidationHelper.isNonEmpty(item.getDescription())) {
-					String[] descArray = item.getDescription().split("%3F");
-					if (descArray.length > 1) {
-						item.setDescription(descArray[0]);
-						LOGGER.debug("FF item desc after rm %3F: " + item.getDescription());
-					}
-				}
-			});
-		}
 	}
 
 	private void setUpdatableTTLItems(ShoppingListVO shoppingListVO) {
@@ -452,6 +427,12 @@ public class ShoppingListServiceImp implements ShoppingListService {
 				itemId = shoppingListItem.getItemId();
 				shoppingListItemId = shoppingListItem.getItemRefId();
 				clipId = shoppingListItem.getClipId();
+				
+				if(clipId == null) {
+					LOGGER.error("Service has found an item with null Clip Id. Item Id = " + itemId);
+					continue;
+				}
+				
 				itemStoreId = shoppingListItem.getStoreId();
 				itemMap = shoppingListItemsMap.get(itemTypeCd);
 				

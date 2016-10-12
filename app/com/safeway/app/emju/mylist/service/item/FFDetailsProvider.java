@@ -14,6 +14,7 @@ import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.helper.DateHelper;
+import com.safeway.app.emju.mylist.helper.DetailUtil;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.ShoppingListItemVO;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
@@ -61,7 +62,7 @@ public class FFDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			}
 
-			shoppingListItemVO.setDescription(manualItem.getItemDesc());
+			shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(manualItem.getItemDesc(), "%3F"));
 			shoppingListItemVO.setQuantity(manualItem.getItemQuantity());
 			if (null != manualItem.getCheckedId()) {
 				shoppingListItemVO.setChecked(manualItem.getCheckedId().equalsIgnoreCase(Constants.YES));

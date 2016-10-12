@@ -13,6 +13,7 @@ import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.helper.DateHelper;
+import com.safeway.app.emju.mylist.helper.DetailUtil;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.ShoppingListItemVO;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
@@ -60,7 +61,7 @@ public class ELPDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			}
 
-			shoppingListItemVO.setDescription(elpItem.getItemDesc());
+			shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(elpItem.getItemDesc(), "%3F"));
 			shoppingListItemVO.setQuantity(elpItem.getItemQuantity());
 			if (null != elpItem.getCheckedId()) {
 				shoppingListItemVO.setChecked(elpItem.getCheckedId().equalsIgnoreCase(Constants.YES));

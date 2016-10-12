@@ -328,8 +328,7 @@ public class EmailDispatcher implements Runnable {
 			}
 		}
 		catch(Exception e) { 
-			e.printStackTrace();
-			LOGGER.error("err msg " + e.getMessage());
+			LOGGER.error("err msg " + e);
 		}
 
 		if (numberOfCategories != shoppingList.size()) {
