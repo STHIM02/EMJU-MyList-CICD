@@ -54,7 +54,7 @@ public class MylistServiceAPIImp implements MylistServiceAPI {
             shoppingVo.setLastDeltaTS(sysTimestamp);
             
         } catch (ApplicationException e) {
-        	LOGGER.error("Error when invoking shoppingListService.getShoppingList" + e);
+        	LOGGER.error("Error when invoking shoppingListService.getShoppingList", e);
 			throw new MobileException(e);
 		}
         
@@ -72,7 +72,7 @@ public class MylistServiceAPIImp implements MylistServiceAPI {
 			
 		} catch(OfferServiceException e) {
 			
-			LOGGER.error("Error when invoking ospDAO.findOfferPrices" + e);
+			LOGGER.error("Error when invoking ospDAO.findOfferPrices", e);
 			throw new MobileException(e);
 		}
 	}
