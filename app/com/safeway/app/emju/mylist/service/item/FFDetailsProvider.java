@@ -47,6 +47,7 @@ public class FFDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 		String clientTimezone = shoppingListVO.getHeaderVO().getTimeZone();
 		shoppingListItemVO.setId(manualItem.getClipId());
 		shoppingListItemVO.setItemType(manualItem.getItemTypeCd());
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 
 		if (Constants.YES.equalsIgnoreCase(details)) {
 			
@@ -62,7 +63,9 @@ public class FFDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			}
 
-			shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(manualItem.getItemDesc(), "%3F"));
+			String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(manualItem.getItemDesc(), "%3F") 
+					: manualItem.getItemDesc();
+			shoppingListItemVO.setDescription(description);
 			shoppingListItemVO.setQuantity(manualItem.getItemQuantity());
 			if (null != manualItem.getCheckedId()) {
 				shoppingListItemVO.setChecked(manualItem.getCheckedId().equalsIgnoreCase(Constants.YES));

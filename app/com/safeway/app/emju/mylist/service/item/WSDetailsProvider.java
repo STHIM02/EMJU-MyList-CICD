@@ -51,6 +51,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 		shoppingListItemVO.setId(wsItem.getClipId());
 		shoppingListItemVO.setReferenceId(wsItem.getItemId());
 		shoppingListItemVO.setItemType(wsItem.getItemTypeCd());
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 
 		if (Constants.YES.equalsIgnoreCase(details)) {
 			
@@ -81,7 +82,9 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 				shoppingListItemVO.setEndDate(DateHelper.getISODate(wsItem.getItemEndDate(), clientTimezone));
 			}
 			if (null != wsItem.getItemDesc()) {
-				shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F"));
+				String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F") 
+						: wsItem.getItemDesc();
+				shoppingListItemVO.setDescription(description);
 			}
 			if (null != wsItem.getItemTitle()) {
 				shoppingListItemVO.setTitle(wsItem.getItemTitle());
@@ -115,6 +118,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 		ShoppingListItemVO shoppingListItemVO = null;		
 		String details = shoppingListVO.getHeaderVO().getDetails();
 		String clientTimezone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 		
 		if(wsItem != null) {
 			
@@ -151,7 +155,9 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 					shoppingListItemVO.setEndDate(DateHelper.getISODate(wsItem.getItemEndDate(), clientTimezone));
 				}
 				if (null != wsItem.getItemDesc()) {
-					shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F"));
+					String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F") 
+							: wsItem.getItemDesc();
+					shoppingListItemVO.setDescription(description);
 				}
 				if (null != wsItem.getItemTitle()) {
 					shoppingListItemVO.setTitle(wsItem.getItemTitle());

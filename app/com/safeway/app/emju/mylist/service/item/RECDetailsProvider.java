@@ -46,6 +46,7 @@ public class RECDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 		String clientTimezone = shoppingListVO.getHeaderVO().getTimeZone();
 		shoppingListItemVO.setId(recipelItem.getClipId());
 		shoppingListItemVO.setItemType(recipelItem.getItemTypeCd());
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 
 		if (Constants.YES.equalsIgnoreCase(details)) {
 			
@@ -61,7 +62,9 @@ public class RECDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			}
 
-			shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(recipelItem.getItemDesc(), "%3F"));
+			String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(recipelItem.getItemDesc(), "%3F") 
+					: recipelItem.getItemDesc();
+			shoppingListItemVO.setDescription(description);
 			shoppingListItemVO.setQuantity(recipelItem.getItemQuantity());
 			if (null != recipelItem.getCheckedId()) {
 				shoppingListItemVO.setChecked(recipelItem.getCheckedId().equalsIgnoreCase(Constants.YES));

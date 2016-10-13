@@ -42,10 +42,12 @@ public class ELPDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 	
 	private ShoppingListItemVO setELPDetails(final ShoppingListItem elpItem,
 			final ShoppingListItemVO shoppingListItemVO, final ShoppingListVO shoppingListVO) {
+		
 		String details = shoppingListVO.getHeaderVO().getDetails();
 		String clientTimezone = shoppingListVO.getHeaderVO().getTimeZone();
 		shoppingListItemVO.setId(elpItem.getClipId());
 		shoppingListItemVO.setItemType(elpItem.getItemTypeCd());
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 
 		if (Constants.YES.equalsIgnoreCase(details)) {
 			
@@ -61,7 +63,9 @@ public class ELPDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			}
 
-			shoppingListItemVO.setDescription(DetailUtil.cleanExtraChars(elpItem.getItemDesc(), "%3F"));
+			String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(elpItem.getItemDesc(), "%3F") 
+					: elpItem.getItemDesc();
+			shoppingListItemVO.setDescription(description);
 			shoppingListItemVO.setQuantity(elpItem.getItemQuantity());
 			if (null != elpItem.getCheckedId()) {
 				shoppingListItemVO.setChecked(elpItem.getCheckedId().equalsIgnoreCase(Constants.YES));
