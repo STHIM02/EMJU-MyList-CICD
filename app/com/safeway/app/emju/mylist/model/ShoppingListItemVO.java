@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.safeway.app.emju.allocation.pricing.entity.ClubPrice;
 import com.safeway.app.emju.cache.entity.OfferDetail;
-import com.safeway.app.emju.helper.ValidationHelper;
-import com.safeway.app.emju.mylist.constant.Constants;
 
 @JsonIgnoreProperties({"offerDetail","clubPrice"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -81,7 +79,7 @@ public class ShoppingListItemVO {
 		return description;
 	}
 	public void setDescription(String description) {
-		this.description = ValidationHelper.trimLengthInBytes(description, Constants.DESCR_MAX_SIZE);;
+		this.description = description;
 	}
 	public String getStoreId() {
 		return storeId;
@@ -99,7 +97,7 @@ public class ShoppingListItemVO {
 		return title;
 	}
 	public void setTitle(String title) {
-		this.title = ValidationHelper.trimLengthInBytes(title, Constants.TITLE_MAX_SIZE);
+		this.title = title;
 	}
 	public String getAddedDate() {
 		return addedDate;
