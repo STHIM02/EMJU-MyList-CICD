@@ -15,6 +15,7 @@ import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.helper.DateHelper;
+import com.safeway.app.emju.mylist.helper.DetailUtil;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.ShoppingListItemVO;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
@@ -50,6 +51,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 		shoppingListItemVO.setId(wsItem.getClipId());
 		shoppingListItemVO.setReferenceId(wsItem.getItemId());
 		shoppingListItemVO.setItemType(wsItem.getItemTypeCd());
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 
 		if (Constants.YES.equalsIgnoreCase(details)) {
 			
@@ -80,7 +82,9 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 				shoppingListItemVO.setEndDate(DateHelper.getISODate(wsItem.getItemEndDate(), clientTimezone));
 			}
 			if (null != wsItem.getItemDesc()) {
-				shoppingListItemVO.setDescription(wsItem.getItemDesc());
+				String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F") 
+						: wsItem.getItemDesc();
+				shoppingListItemVO.setDescription(description);
 			}
 			if (null != wsItem.getItemTitle()) {
 				shoppingListItemVO.setTitle(wsItem.getItemTitle());
@@ -114,6 +118,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 		ShoppingListItemVO shoppingListItemVO = null;		
 		String details = shoppingListVO.getHeaderVO().getDetails();
 		String clientTimezone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 		
 		if(wsItem != null) {
 			
@@ -150,7 +155,9 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 					shoppingListItemVO.setEndDate(DateHelper.getISODate(wsItem.getItemEndDate(), clientTimezone));
 				}
 				if (null != wsItem.getItemDesc()) {
-					shoppingListItemVO.setDescription(wsItem.getItemDesc());
+					String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(wsItem.getItemDesc(), "%3F") 
+							: wsItem.getItemDesc();
+					shoppingListItemVO.setDescription(description);
 				}
 				if (null != wsItem.getItemTitle()) {
 					shoppingListItemVO.setTitle(wsItem.getItemTitle());

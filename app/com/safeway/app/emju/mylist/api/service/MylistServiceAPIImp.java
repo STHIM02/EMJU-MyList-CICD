@@ -39,24 +39,24 @@ public class MylistServiceAPIImp implements MylistServiceAPI {
 		ShoppingVO shoppingVo = null;
 		List<ShoppingListVO> shoppingLists = null;
 		
-		ShoppingListVO shoppingListVo = TransformUtil.getShoppingListVO(request);
-		
-		shoppingListVo.getHeaderVO().setDetails(details);
-        shoppingListVo.getHeaderVO().setTimestamp(timestamp);
-		
-        try {
+		try {
+			ShoppingListVO shoppingListVo = TransformUtil.getShoppingListVO(request);
+			
+			shoppingListVo.getHeaderVO().setDetails(details);
+	        shoppingListVo.getHeaderVO().setTimestamp(timestamp);		
         	shoppingLists = shoppingListService.getShoppingList(shoppingListVo);
+        	
+    		String clientTimezone = shoppingListVo.getHeaderVO().getTimeZone();
+            String sysTimestamp = DateHelper.getISODate(new Date(), clientTimezone);
+            
+    		shoppingVo = new ShoppingVO();
+            shoppingVo.setShoppingLists(shoppingLists);
+            shoppingVo.setLastDeltaTS(sysTimestamp);
+            
         } catch (ApplicationException e) {
-        	LOGGER.error("Error when invoking shoppingListService.getShoppingList" + e);
+        	LOGGER.error("Error when invoking shoppingListService.getShoppingList", e);
 			throw new MobileException(e);
 		}
-        
-		String clientTimezone = shoppingListVo.getHeaderVO().getTimeZone();
-        String sysTimestamp = DateHelper.getISODate(new Date(), clientTimezone);
-        
-		shoppingVo = new ShoppingVO();
-        shoppingVo.setShoppingLists(shoppingLists);
-        shoppingVo.setLastDeltaTS(sysTimestamp);
         
 		return shoppingVo;
 	}
@@ -72,7 +72,7 @@ public class MylistServiceAPIImp implements MylistServiceAPI {
 			
 		} catch(OfferServiceException e) {
 			
-			LOGGER.error("Error when invoking ospDAO.findOfferPrices" + e);
+			LOGGER.error("Error when invoking ospDAO.findOfferPrices", e);
 			throw new MobileException(e);
 		}
 	}

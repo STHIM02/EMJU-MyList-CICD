@@ -150,177 +150,185 @@ public class EmailDispatcher implements Runnable {
 		Collections.sort(itemVOSList, new ShoppingListEmailComparator());
 		ShoppingListGroup[] shoppingListGroupList = criteria.getGroups();
 
-		for (ShoppingListGroup shoppingListGroup : shoppingListGroupList) {
-
-			List<String> itemIds = shoppingListGroup.getItemIds();
-			for (String itemId : itemIds) {
-
-				for (ShoppingListItemVO currentItem : itemVOSList) {
-
-					if (itemId.equals(currentItem.getId())) {
-
-						LOGGER.debug("Item retrieved for mail to be processed: " + currentItem.getReferenceId());
-						categoryNm = shoppingListGroup.getGroupName();
-						if (ValidationHelper.isEmpty(categoryNm)) {
-							categoryNm = Constants.MY_ADDED_ITEMS;
-						}
-
-						if (!presentCategory.equals(categoryNm)) {
-							numberOfCategories++;
-							if (!(numberOfResults == 0)) {
-								shoppingList.add(shoppingListItemGroup);
+		try {
+			for (ShoppingListGroup shoppingListGroup : shoppingListGroupList) {
+	
+				List<String> itemIds = shoppingListGroup.getItemIds();
+				for (String itemId : itemIds) {
+	
+					for (ShoppingListItemVO currentItem : itemVOSList) {
+	
+						if (itemId.equals(currentItem.getId())) {
+	
+							LOGGER.debug("Item retrieved for mail to be processed: " + currentItem.getReferenceId() + "/" + itemId);
+							categoryNm = shoppingListGroup.getGroupName();
+							if (ValidationHelper.isEmpty(categoryNm)) {
+								categoryNm = Constants.MY_ADDED_ITEMS;
 							}
-							shoppingListItemGroup = new EmailItemGroup();
-							shoppingListItemGroup.setGroupName(categoryNm);
-							presentCategory = categoryNm;
-							items = new ArrayList<EmailItemDetail>();
-							shoppingListItemGroup.setItems(items);
-						}
-
-						EmailItemDetail shoppingListItemDetail = new EmailItemDetail();
-						shoppingListItemDetail.setCategoryName(currentItem.getCategoryName());
-
-						DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-						DateFormat fromGetFormatter = new SimpleDateFormat(Constants.ISO_DATE_FORMAT);
-
-						Date startDate = null;
-						Date endDate = null;
-						String parsedStart = null;
-						String parsedEnd = null;
-
-						try {
-							if (null != currentItem.getStartDate()) {
-								startDate = fromGetFormatter.parse(currentItem.getStartDate());
-								parsedStart = formatter.format(startDate);
+	
+							if (!presentCategory.equals(categoryNm)) {
+								numberOfCategories++;
+								if (!(numberOfResults == 0)) {
+									shoppingList.add(shoppingListItemGroup);
+								}
+								shoppingListItemGroup = new EmailItemGroup();
+								shoppingListItemGroup.setGroupName(categoryNm);
+								presentCategory = categoryNm;
+								items = new ArrayList<EmailItemDetail>();
+								shoppingListItemGroup.setItems(items);
 							}
-							shoppingListItemDetail.setEffective(parsedStart);
-							if (null != currentItem.getEndDate()) {
-								endDate = fromGetFormatter.parse(currentItem.getEndDate());
-								parsedEnd = formatter.format(endDate);
+	
+							EmailItemDetail shoppingListItemDetail = new EmailItemDetail();
+							shoppingListItemDetail.setCategoryName(currentItem.getCategoryName());
+	
+							DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+							DateFormat fromGetFormatter = new SimpleDateFormat(Constants.ISO_DATE_FORMAT);
+	
+							Date startDate = null;
+							Date endDate = null;
+							String parsedStart = null;
+							String parsedEnd = null;
+	
+							try {
+								if (null != currentItem.getStartDate()) {
+									startDate = fromGetFormatter.parse(currentItem.getStartDate());
+									parsedStart = formatter.format(startDate);
+								}
+								shoppingListItemDetail.setEffective(parsedStart);
+								if (null != currentItem.getEndDate()) {
+									endDate = fromGetFormatter.parse(currentItem.getEndDate());
+									parsedEnd = formatter.format(endDate);
+								}
+								shoppingListItemDetail.setExpiration(parsedEnd);
+							} catch (ParseException e) {
+								LOGGER.error("Error Parsing Dates- Start Date: " + currentItem.getStartDate()
+										+ ":: End Date: " + currentItem.getEndDate());
 							}
-							shoppingListItemDetail.setExpiration(parsedEnd);
-						} catch (ParseException e) {
-							LOGGER.error("Error Parsing Dates- Start Date: " + currentItem.getStartDate()
-									+ ":: End Date: " + currentItem.getEndDate());
-						}
-
-						if (null != currentItem.getImage()) {
-							StringBuffer imageUrl = new StringBuffer();
-
-							if (Constants.J4U.contains(currentItem.getItemType())) {
-								imageUrl.append(J4U_IMAGE_URL);
-								imageUrl.append(currentItem.getImage());
-								shoppingListItemDetail.setImage(imageUrl.toString());
-							}
-						}
-
-						String itemTitle = currentItem.getTitle() == null ? null : currentItem.getTitle();
-						LOGGER.debug("Item title: " + itemTitle);
-						shoppingListItemDetail.setName(itemTitle);
-						LOGGER.debug("Item quantity " + currentItem.getQuantity());
-						String itemDescription = currentItem.getDescription() == null ? null
-								: parseDescription(currentItem);
-						LOGGER.debug("Item description: " + itemDescription);
-						shoppingListItemDetail.setDescription(itemDescription);
-						shoppingListItemDetail.setSavings(currentItem.getSavingsValue());
-						shoppingListItemDetail.setType(currentItem.getSavingsType());
-						shoppingListItemDetail.setUsageLimit(currentItem.getUsage());
-
-						LOGGER.debug("Item Type: " + currentItem.getItemType());
-
-						if (currentItem.getItemType()
-								.equalsIgnoreCase(Constants.ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())
-								|| currentItem.getItemType()
-										.equalsIgnoreCase(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
-
-							LOGGER.debug("Image Type: " + currentItem.getImage());
-							// Validate the image url is not exist then it
-							// default to ycs url
-							if (null == currentItem.getImage()) {
+	
+							if (null != currentItem.getImage()) {
 								StringBuffer imageUrl = new StringBuffer();
-
-								imageUrl.append(YCS_IMAGE_URL).append(currentItem.getReferenceId()).append(YCS_IMAGE_EXT);
-								LOGGER.debug("YCS Image Path: " + imageUrl.toString());
-								if (canImageLoad(imageUrl.toString())) {
-									
-									LOGGER.debug("YCS Set Image Path: " + imageUrl.toString());
+	
+								if (Constants.J4U.contains(currentItem.getItemType())) {
+									imageUrl.append(J4U_IMAGE_URL);
+									imageUrl.append(currentItem.getImage());
 									shoppingListItemDetail.setImage(imageUrl.toString());
 								}
 							}
-
+	
+							String itemTitle = currentItem.getTitle() == null ? null : currentItem.getTitle();
+							LOGGER.debug("Item title: " + itemTitle);
+							shoppingListItemDetail.setName(itemTitle);
+							LOGGER.debug("Item quantity " + currentItem.getQuantity());
+							String itemDescription = currentItem.getDescription() == null ? null
+									: parseDescription(currentItem);
+							LOGGER.debug("Item description: " + itemDescription);
+							shoppingListItemDetail.setDescription(itemDescription);
+							shoppingListItemDetail.setSavings(currentItem.getSavingsValue());
+							shoppingListItemDetail.setType(currentItem.getSavingsType());
+							shoppingListItemDetail.setUsageLimit(currentItem.getUsage());
+	
+							LOGGER.debug("Item Type: " + currentItem.getItemType());
+	
 							if (currentItem.getItemType()
-									.equalsIgnoreCase(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
-								double promoPrice = 0;
-
-								if (currentItem.getSavingsValue() != null) {
-									// promoPrice = ((BigDecimal)
-									// Long.valueOf(currentItem.getSavingsValue())).doubleValue();
-									promoPrice = Double.parseDouble(currentItem.getSavingsValue());
+									.equalsIgnoreCase(Constants.ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())
+									|| currentItem.getItemType()
+											.equalsIgnoreCase(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
+	
+								LOGGER.debug("Image Type: " + currentItem.getImage());
+								// Validate the image url is not exist then it
+								// default to ycs url
+								if (null == currentItem.getImage()) {
+									StringBuffer imageUrl = new StringBuffer();
+	
+									imageUrl.append(YCS_IMAGE_URL).append(currentItem.getReferenceId()).append(YCS_IMAGE_EXT);
+									LOGGER.debug("YCS Image Path: " + imageUrl.toString());
+									if (canImageLoad(imageUrl.toString())) {
+										
+										LOGGER.debug("YCS Set Image Path: " + imageUrl.toString());
+										shoppingListItemDetail.setImage(imageUrl.toString());
+									}
 								}
-								String priceMethodType = currentItem.getSavingsCode();
-								String priceMethodSubType = currentItem.getSavingsSubCode();
-								DecimalFormat decFormat = new DecimalFormat("0.00");
-								if (priceMethodType != null
-										&& priceMethodType.equalsIgnoreCase(Constants.PRICE_METHOD_TYPE_BOGO)) {
-									if (priceMethodSubType != null && priceMethodSubType
-											.equalsIgnoreCase(Constants.PRICE_METHOD_SUB_TYPE_B1G1)) {
-										shoppingListItemDetail.setSavings(Constants.B1G1_SAVINGS_DESC);
+	
+								if (currentItem.getItemType()
+										.equalsIgnoreCase(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString())) {
+									double promoPrice = 0;
+	
+									if (currentItem.getSavingsValue() != null) {
+										// promoPrice = ((BigDecimal)
+										// Long.valueOf(currentItem.getSavingsValue())).doubleValue();
+										promoPrice = Double.parseDouble(currentItem.getSavingsValue());
 									}
-								} else if (priceMethodType != null
-										&& priceMethodType.equalsIgnoreCase(Constants.PRICE_METHOD_TYPE_MB)) {
-									if (priceMethodSubType != null && priceMethodSubType
-											.equalsIgnoreCase(Constants.PRICE_METHOD_SUB_TYPE_MB2)) {
-										shoppingListItemDetail.setSavings(savingsSuffix.get("YCS") + " "
-												+ decFormat.format(promoPrice) + "<br>" + Constants.MB2_SAVINGS_DESC);
+									String priceMethodType = currentItem.getSavingsCode();
+									String priceMethodSubType = currentItem.getSavingsSubCode();
+									DecimalFormat decFormat = new DecimalFormat("0.00");
+									if (priceMethodType != null
+											&& priceMethodType.equalsIgnoreCase(Constants.PRICE_METHOD_TYPE_BOGO)) {
+										if (priceMethodSubType != null && priceMethodSubType
+												.equalsIgnoreCase(Constants.PRICE_METHOD_SUB_TYPE_B1G1)) {
+											shoppingListItemDetail.setSavings(Constants.B1G1_SAVINGS_DESC);
+										}
+									} else if (priceMethodType != null
+											&& priceMethodType.equalsIgnoreCase(Constants.PRICE_METHOD_TYPE_MB)) {
+										if (priceMethodSubType != null && priceMethodSubType
+												.equalsIgnoreCase(Constants.PRICE_METHOD_SUB_TYPE_MB2)) {
+											shoppingListItemDetail.setSavings(savingsSuffix.get("YCS") + " "
+													+ decFormat.format(promoPrice) + "<br>" + Constants.MB2_SAVINGS_DESC);
+										}
+									} else {
+										shoppingListItemDetail
+												.setSavings(savingsSuffix.get("YCS") + decFormat.format(promoPrice));
 									}
-								} else {
+	
 									shoppingListItemDetail
-											.setSavings(savingsSuffix.get("YCS") + decFormat.format(promoPrice));
+											.setType(types.get(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString()));
+									shoppingListItemDetail.setUsageLimit(usageLimits.get("U"));
 								}
+							} else if (Constants.J4U_ADD.contains(currentItem.getItemType())) {
 
-								shoppingListItemDetail
-										.setType(types.get(Constants.ItemTypeCode.CLUB_SPECIAL_ITEM.toString()));
-								shoppingListItemDetail.setUsageLimit(usageLimits.get("U"));
-							}
-						} else if (Constants.J4U_ADD.contains(currentItem.getItemType())) {
+								shoppingListItemDetail.setUsageLimit(usageLimits.get(currentItem.getUsage()));
+								shoppingListItemDetail.setType(types.get(currentItem.getItemType()));
+								shoppingListItemDetail.setSavings(
+										savingsSuffix.get(currentItem.getItemType()) + currentItem.getSavingsValue());
+							} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
 
-							shoppingListItemDetail.setUsageLimit(usageLimits.get(currentItem.getUsage()));
-							shoppingListItemDetail.setType(types.get(currentItem.getItemType()));
-							shoppingListItemDetail.setSavings(
-									savingsSuffix.get(currentItem.getItemType()) + currentItem.getSavingsValue());
-						} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
-							
-							if (null != currentItem.getImage()) {
-								StringBuffer imageUrl = new StringBuffer();
+								if (null != currentItem.getImage()) {
+									StringBuffer imageUrl = new StringBuffer();
+	
+									imageUrl.append(WS_IMAGE_URL).append(currentItem.getImage()).append(WS_IMAGE_EXT);
+									LOGGER.debug("WS Image Path: " + imageUrl.toString());
+									if (canImageLoad(imageUrl.toString())) {
+										
+										LOGGER.debug("WS Set Image Path: " + imageUrl.toString());
+										shoppingListItemDetail.setImage(imageUrl.toString());
+									}
+								}
+							} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.LANDING_PAGE_ITEM.toString())) {
 
-								imageUrl.append(WS_IMAGE_URL).append(currentItem.getImage()).append(WS_IMAGE_EXT);
-								LOGGER.debug("WS Image Path: " + imageUrl.toString());
-								if (canImageLoad(imageUrl.toString())) {
+								if (null != currentItem.getImage()) {
 									
-									LOGGER.debug("WS Set Image Path: " + imageUrl.toString());
-									shoppingListItemDetail.setImage(imageUrl.toString());
+									LOGGER.debug("ELP Image Path: " + currentItem.getImage());
+									if (canImageLoad(currentItem.getImage())) {
+										
+										LOGGER.debug("ELP Set Image Path: " + currentItem.getImage());
+										shoppingListItemDetail.setImage(currentItem.getImage());
+									}
 								}
 							}
-						} else if (currentItem.getItemType().equalsIgnoreCase(Constants.ItemTypeCode.LANDING_PAGE_ITEM.toString())) {
+							else {
+								LOGGER.debug("item type no match " + currentItem.getItemType());
+							}
 							
-							if (null != currentItem.getImage()) {
-								
-								LOGGER.debug("ELP Image Path: " + currentItem.getImage());
-								if (canImageLoad(currentItem.getImage())) {
-									
-									LOGGER.debug("ELP Set Image Path: " + currentItem.getImage());
-									shoppingListItemDetail.setImage(currentItem.getImage());
-								}
-							}
+							items.add(shoppingListItemDetail);
+							numberOfResults++;
+							itemVOSList.remove(currentItem);
+							break;
 						}
-
-						items.add(shoppingListItemDetail);
-						numberOfResults++;
-						itemVOSList.remove(currentItem);
-						break;
 					}
 				}
 			}
+		}
+		catch(Exception e) { 
+			LOGGER.error("err msg " + e);
 		}
 
 		if (numberOfCategories != shoppingList.size()) {

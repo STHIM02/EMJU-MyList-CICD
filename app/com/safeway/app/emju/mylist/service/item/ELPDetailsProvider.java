@@ -13,6 +13,7 @@ import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.helper.DateHelper;
+import com.safeway.app.emju.mylist.helper.DetailUtil;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.ShoppingListItemVO;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
@@ -41,10 +42,12 @@ public class ELPDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 	
 	private ShoppingListItemVO setELPDetails(final ShoppingListItem elpItem,
 			final ShoppingListItemVO shoppingListItemVO, final ShoppingListVO shoppingListVO) {
+		
 		String details = shoppingListVO.getHeaderVO().getDetails();
 		String clientTimezone = shoppingListVO.getHeaderVO().getTimeZone();
 		shoppingListItemVO.setId(elpItem.getClipId());
 		shoppingListItemVO.setItemType(elpItem.getItemTypeCd());
+		boolean hasItemIdFilter = shoppingListVO.getItemIds() != null;
 
 		if (Constants.YES.equalsIgnoreCase(details)) {
 			
@@ -60,7 +63,9 @@ public class ELPDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			}
 
-			shoppingListItemVO.setDescription(elpItem.getItemDesc());
+			String description = hasItemIdFilter ? DetailUtil.cleanExtraChars(elpItem.getItemDesc(), "%3F") 
+					: elpItem.getItemDesc();
+			shoppingListItemVO.setDescription(description);
 			shoppingListItemVO.setQuantity(elpItem.getItemQuantity());
 			if (null != elpItem.getCheckedId()) {
 				shoppingListItemVO.setChecked(elpItem.getCheckedId().equalsIgnoreCase(Constants.YES));
