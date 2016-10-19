@@ -392,7 +392,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			LOGGER.debug("PreferredStore: " + headerVO.getPreferredStore());
 
 		} catch (Exception e) {
-			LOGGER.error("Caught Exception" + e.getMessage());
+			LOGGER.error("Caught Exception" + e.getMessage(), e);
 			LOGGER.error("preferredStore: null");
 		}
 
