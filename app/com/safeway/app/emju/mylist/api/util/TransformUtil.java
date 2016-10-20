@@ -46,7 +46,8 @@ public class TransformUtil {
 		headerVO.setPostalBanner(clientInfo.getBanner());
 		headerVO.setAppKey(clientInfo.getAppId());
 		headerVO.setAppVersion(clientInfo.getAppVersion());
-		headerVO.setVersionValues(versionMap.get(headerVO.getAppVersion().trim())); // What is this?
+		headerVO.setVersionValues(versionMap.getOrDefault(headerVO.getAppVersion().trim(), 
+				new boolean[] { true, true, true }));
 		headerVO.setParamStoreId(Integer.toString(clientInfo.getStoreId()));
 		headerVO.setBannner(clientInfo.getBanner());
 		headerVO.setLoggedUserId(clientInfo.getAppUser());
