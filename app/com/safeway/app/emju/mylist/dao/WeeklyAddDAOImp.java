@@ -40,9 +40,7 @@ public class WeeklyAddDAOImp implements WeeklyAddDAO {
 			String sql = "SELECT * FROM emju.offer_weekly_ad WHERE offer_id IN ?";
 			LOGGER.debug("Query to execute: " + sql);
 
-            PreparedStatement select = connector.getSession().prepare(sql);
-            select.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
-            BoundStatement boundStatement = new BoundStatement(select);
+            BoundStatement boundStatement = connector.getStatement(sql, connector.getSession());
 
             ResultSet rs = connector.getSession().execute(boundStatement.bind(offerIds));
             Result<WeeklyAdd> result = connector.getMappingManager().mapper(WeeklyAdd.class).map(rs);

@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.mapping.Mapper;
@@ -57,9 +56,7 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
     		"WHERE retail_customer_id = ? AND household_id = ? AND shopping_list_nm = ?";
 			LOGGER.debug("Query to execute: " + sql);
 
-            PreparedStatement select = connector.getSession().prepare(sql);
-            select.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
-            BoundStatement boundStatement = new BoundStatement(select);
+            BoundStatement boundStatement = connector.getStatement(sql, connector.getSession());
             
 			LOGGER.debug("Accessing database records with params custGUID " + custGUID + ", " +
 					"householdId " + householdId + ", shoppingListNm " + shoppingListNm);
