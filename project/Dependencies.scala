@@ -15,7 +15,7 @@ object Dependencies {
   
   object emju {
     val common		= "emju-common" % "emju-common_2.11" % "2.8.0"
-    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.8.0"
+    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.10.0"
   }
 
   val json		= "com.fasterxml.jackson.core" % "jackson-core" % "2.6.1"
