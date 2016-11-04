@@ -430,7 +430,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 				
 				if(clipId == null) {
 					
-					String error = "Service has found an item with null Clip Id. Item Id = " + itemId;
+					String error = "Service has found an item with null Clip Id. Item :" + shoppingListItem.toString();
 					LOGGER.error(FaultCodeBase.EMLS_INVALID_CLIP_ID, error, new Exception(error), false);
 					continue;
 				}

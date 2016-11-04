@@ -4,10 +4,16 @@ import com.google.inject.Inject;
 import com.safeway.app.emju.allocation.customerlookup.dao.CustomerLookupDAO;
 import com.safeway.app.emju.cache.StoreCache;
 import com.safeway.app.emju.cache.entity.Store;
+import com.safeway.app.emju.exception.ApplicationException;
+import com.safeway.app.emju.exception.FaultCodeBase;
+import com.safeway.app.emju.logging.Logger;
+import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.model.PreferredStore;
 
 public class StoreDAOImp implements StoreDAO {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(StoreDAOImp.class);
 	
 	private CustomerLookupDAO customerLookupDAO;
 	private StoreCache storeCache;
@@ -21,18 +27,41 @@ public class StoreDAOImp implements StoreDAO {
 
 	@Override
 	public PreferredStore findStoreInfo(Integer storeId, Long householdID, 
-			String registeredZipCode) throws Exception {
+			String registeredZipCode) throws ApplicationException {
 		
+		PreferredStore result = null;
 		Integer userStoreId = null;
 
-        // If valid StoreID is not passed, find StoreID info user HHID.
-        if (null != storeId) {
-            userStoreId = storeId;
-        } else {
-            userStoreId = findPrimaryStore(householdID);
-        }
+		try{
+	        // If valid StoreID is not passed, find StoreID info user HHID.
+	        if (null != storeId) {
+	            userStoreId = storeId;
+	        } else {
+	            userStoreId = findPrimaryStore(householdID);
+	        }
+		} catch(Exception e) {
+			LOGGER.error("Error on findPrimaryStore", e);
+			throw new ApplicationException(FaultCodeBase.EMLS_UNABLE_TO_PROCESS, 
+					"invalid or null storeId", null);
+		}
+		
+		if(userStoreId == null) {
+			LOGGER.error("Error on findStoreInfo, userStoreId is null");
+			throw new ApplicationException(FaultCodeBase.EMLS_UNABLE_TO_PROCESS, 
+					"invalid or null storeId", null);
+		}
+		
+		try{
+			
+			result = findStoreDetails(userStoreId, registeredZipCode);
+		} catch(Exception e) {
+			
+			LOGGER.error("Error on findStoreDetails", e);
+			throw new ApplicationException(FaultCodeBase.EMLS_UNABLE_TO_PROCESS, 
+					"invalid or null storeId", null);
+		}
 
-        return findStoreDetails(userStoreId, registeredZipCode);
+        return result;
 	}
 	
 	private Integer findPrimaryStore(final Long householdID) throws Exception {

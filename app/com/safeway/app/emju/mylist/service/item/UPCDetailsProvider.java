@@ -78,7 +78,8 @@ public class UPCDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 
 			productItem = entry.getValue();
 			
-			if(purchaseMap.get(Long.valueOf(entry.getKey())) == null) {
+			if(purchaseMap.get(Long.valueOf(entry.getKey())) == null ||
+					ValidationHelper.isEmpty(productItem.getItemTitle())) {
 				
 				if(productItem.getTtl() == null || productItem.getTtl() == 0) {
 					
