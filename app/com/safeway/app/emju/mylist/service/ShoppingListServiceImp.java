@@ -159,6 +159,12 @@ public class ShoppingListServiceImp implements ShoppingListService {
 					ycsStoreId = shoppingListVO.getHeaderVO().getPreferredStore().getStoreId().toString();
 				}
 			}
+			
+			if(!ValidationHelper.isNumber(ycsStoreId)) {
+				LOGGER.error("Error on getShoppingList, ycsStoreId is not a number");
+				throw new ApplicationException(FaultCodeBase.EMLS_UNABLE_TO_PROCESS, 
+						"invalid or null storeId", null);
+			}
 			LOGGER.info("Store ID used for Filtering YCS items after: " + ycsStoreId);
 
 			// Initialize map with all the item types
@@ -369,7 +375,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		}
 	}
 
-	private void setPreferredStoreInfo(HeaderVO headerVO, String selectedStoreId) {
+	private void setPreferredStoreInfo(HeaderVO headerVO, String selectedStoreId) throws ApplicationException {
 
 		LOGGER.debug("setPreferredStoreInfo() starts.");
 
@@ -391,9 +397,15 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			headerVO.setPreferredStore(preferredStore);
 			LOGGER.debug("PreferredStore: " + headerVO.getPreferredStore());
 
+		} catch (ApplicationException ae) {
+			LOGGER.error("Caught Exception" + ae.getMessage(), ae);
+			LOGGER.error("preferredStore: null");
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("Caught Exception" + e.getMessage(), e);
-			LOGGER.error("preferredStore: null");
+			LOGGER.error("Error on setPreferredStoreInfo");
+				throw new ApplicationException(FaultCodeBase.EMLS_UNABLE_TO_PROCESS, 
+						"invalid or null storeId", null);
 		}
 
 		LOGGER.debug("setPreferredStoreInfo() finished.");
