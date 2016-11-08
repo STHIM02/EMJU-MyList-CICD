@@ -23,7 +23,7 @@
 				<!-- or whenever the file size reaches 5MB -->
 				<maxFileSize>5MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>30</maxHistory>
+			<maxHistory>7</maxHistory>
 		</rollingPolicy>
 	</appender>
 	<appender name="emju_mylist_async_appender" class="ch.qos.logback.classic.AsyncAppender">

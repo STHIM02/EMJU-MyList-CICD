@@ -29,7 +29,7 @@
 				<!-- or whenever the file size reaches 5MB -->
 				<maxFileSize>5MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>30</maxHistory>
+			<maxHistory>7</maxHistory>
 		</rollingPolicy>
 	</appender>
 	
@@ -48,7 +48,7 @@
 				<!-- or whenever the file size reaches 5MB -->
 				<maxFileSize>5MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>30</maxHistory>
+			<maxHistory>7</maxHistory>
 		</rollingPolicy>
 	</appender>
 	
