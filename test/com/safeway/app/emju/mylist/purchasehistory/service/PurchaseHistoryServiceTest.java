@@ -218,10 +218,10 @@ public class PurchaseHistoryServiceTest {
         when(pdAllocationDAO.findPDCustomAllocation(any(Long.class),any(Integer.class))).thenReturn(pdOffers);
         when(offerStorePriceDAO.findOfferPrices(any(Integer.class), anyListOf(Long.class))).thenReturn(pdOfferStorePrices);
 
-        //CC offers
+        //CC offers, flag is for riq HTO call
         when(cCAllocationDAO.findCCAllocation(any(String.class))).thenReturn(ccOffers);
         when(partnerAllocationService.getAllocations(
-            any(PartnerAllocationType.class), any(PartnerAllocationRequest.class))).thenReturn(catalinaOfferIds);
+            any(PartnerAllocationType.class), any(PartnerAllocationRequest.class), true)).thenReturn(catalinaOfferIds);
 
         //clipped offers
         when(offerStatusService.findOfferClipStatus(

@@ -71,6 +71,8 @@ import com.safeway.app.emju.mylist.purchasehistory.parser.PurchaseHistoryRequest
 import com.safeway.app.emju.util.ListItemReference;
 
 import akka.dispatch.MessageDispatcher;
+import play.Configuration;
+import play.Play;
 import play.libs.Akka;
 import play.libs.F.Promise;
 
@@ -107,6 +109,8 @@ public class PurchaseHistoryService {
     private static final String SORT_TYPE_RECENCY = "purchaseRecency";
 
     String[] OFFER_TYPES = { OfferProgram.PD, OfferProgram.SC, OfferProgram.MF };
+    
+    Configuration config = Play.application().configuration();
 
     @Inject
     public PurchaseHistoryService(final PurchasedItemDAO purchasedItemDAO
@@ -384,8 +388,9 @@ public class PurchaseHistoryService {
     
 	private Promise<List<Long>> getPartnerAllocationOffers(ClientRequest purchaseHistoryRequest)
 			throws OfferServiceException {
+		
+		Boolean isRiqEnabled = Boolean.parseBoolean(config.getString("riq.enabled"));
 
-		  
 		PartnerAllocationRequest partnerAllocationRequest = new PartnerAllocationRequest();
 		partnerAllocationRequest.setAppId(purchaseHistoryRequest.getAppId());
 		LOGGER.debug("ClubCard passed to partner allocation service is " + purchaseHistoryRequest.getClubCard());
@@ -396,7 +401,7 @@ public class PurchaseHistoryService {
 		partnerAllocationRequest.setHouseholdSessionId(purchaseHistoryRequest.getSessionToken()); 
 		Promise<List<Long>> partnerAllocationList = 
 				partnerAllocationService.getAsyncAllocations(PartnerAllocationType.HOUSEHOLD_TARGETED_OFFER, 
-						partnerAllocationRequest);
+						partnerAllocationRequest, isRiqEnabled);
 		
         
         return partnerAllocationList;
@@ -630,6 +635,8 @@ public class PurchaseHistoryService {
      */
     private List<Long> getCatalinaAllocationOffers(final ClientRequest purchaseHistoryRequest)
         throws OfferServiceException {
+    	
+    	Boolean isRiqEnabled = Boolean.parseBoolean(config.getString("riq.enabled"));
 
         PartnerAllocationRequest partnerAllocationRequest = new PartnerAllocationRequest();
         partnerAllocationRequest.setAppId(purchaseHistoryRequest.getAppId());
@@ -639,7 +646,7 @@ public class PurchaseHistoryService {
         // ?
         Promise<List<Long>> partnerAllocationList =
             partnerAllocationService.getAsyncAllocations(
-                PartnerAllocationType.HOUSEHOLD_TARGETED_OFFER, partnerAllocationRequest);
+                PartnerAllocationType.HOUSEHOLD_TARGETED_OFFER, partnerAllocationRequest, isRiqEnabled);
 
         List<Long> partnerOfferIds = partnerAllocationList.get(1, TimeUnit.SECONDS);
 

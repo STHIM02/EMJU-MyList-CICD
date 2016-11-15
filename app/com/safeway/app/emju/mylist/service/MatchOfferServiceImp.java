@@ -51,6 +51,8 @@ import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.HeaderVO;
 import com.safeway.app.emju.mylist.model.PreferredStore;
 
+import play.Configuration;
+import play.Play;
 import play.libs.F.Promise;
 
 public class MatchOfferServiceImp implements MatchOfferSevice {
@@ -64,6 +66,8 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 	private OfferDetailCache offerCache;
 	private OfferStorePriceDAO pricingDAO;
 	private PartnerAllocationService partnerAllocationService;
+	
+	Configuration config = Play.application().configuration();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MatchOfferServiceImp.class);
 
@@ -632,6 +636,8 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 	private Promise<List<Long>> getPartnerAllocationOffers(final  HeaderVO headerVO)
 			throws OfferServiceException {
 
+		Boolean isRiqEnabled = Boolean.parseBoolean(config.getString("riq.enabled"));
+		
 		PartnerAllocationRequest partnerAllocationRequest = new PartnerAllocationRequest();
 		partnerAllocationRequest.setAppId(headerVO.getAppKey());
 		LOGGER.debug("Swycoremaclubcard passed to partner allocation service is " + headerVO.getSwycoremaclubcard());
@@ -642,7 +648,7 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 		partnerAllocationRequest.setHouseholdSessionId(headerVO.getSessionToken()); 
 		Promise<List<Long>> partnerAllocationList = 
 				partnerAllocationService.getAsyncAllocations(PartnerAllocationType.HOUSEHOLD_TARGETED_OFFER, 
-						partnerAllocationRequest);
+						partnerAllocationRequest, isRiqEnabled);
         
         return partnerAllocationList;
 
