@@ -15,6 +15,7 @@ package com.safeway.app.emju.mylist.purchasehistory.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.when;
@@ -221,7 +222,7 @@ public class PurchaseHistoryServiceTest {
         //CC offers, flag is for riq HTO call
         when(cCAllocationDAO.findCCAllocation(any(String.class))).thenReturn(ccOffers);
         when(partnerAllocationService.getAllocations(
-            any(PartnerAllocationType.class), any(PartnerAllocationRequest.class), true)).thenReturn(catalinaOfferIds);
+            any(PartnerAllocationType.class), any(PartnerAllocationRequest.class), eq(false))).thenReturn(catalinaOfferIds);
 
         //clipped offers
         when(offerStatusService.findOfferClipStatus(
