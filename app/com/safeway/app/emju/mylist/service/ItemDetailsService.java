@@ -20,12 +20,12 @@ public interface ItemDetailsService {
 			ShoppingListVO shoppingListVO, Map<String, Map<String, List<AllocatedOffer>>> matchedOffers)
 					throws ApplicationException;
 	
-	Promise<Map<Long, Object>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
+	Promise<Map<Long, ?>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
 			ShoppingListVO shoppingListVO) throws ApplicationException;
 	
-	public Collection<ShoppingListItemVO> getItemDetails(String itemType, Map<Long, Object> itemDetailMap, 
+	public Collection<ShoppingListItemVO> getItemDetails(String itemType, Map<Long, ?> itemDetailMap, 
 			Map<String, ShoppingListItem> itemMap, ShoppingListVO shoppingListVO) throws ApplicationException;
 	
-	public Map<Long, Object>  getDetailsPromiseResul(String itemType, Promise<Map<Long, Object>> promiseItemDetail) 
+	public Map<Long, ?>  getDetailsPromiseResul(String itemType, Promise<Map<Long, ?>> promiseItemDetail) 
     		throws ApplicationException;
 }

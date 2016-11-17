@@ -3,12 +3,11 @@ package com.safeway.app.emju.mylist.dao;
 import java.util.List;
 
 import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.mapping.Result;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.safeway.app.emju.dao.connector.CassandraConnector;
 import com.safeway.app.emju.dao.exception.ConnectionException;
 import com.safeway.app.emju.exception.ApplicationException;
@@ -17,6 +16,7 @@ import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.entity.WeeklyAdd;
 
+@Singleton
 public class WeeklyAddDAOImp implements WeeklyAddDAO {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(WeeklyAddDAOImp.class);

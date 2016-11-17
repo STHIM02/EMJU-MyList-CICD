@@ -527,7 +527,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 					throws ApplicationException {
 
 		Map<String, ShoppingListItem> itemMap = null;
-		Map<String, Promise<Map<Long, Object>>> offerDetails = new HashMap<String, Promise<Map<Long, Object>>>();
+		Map<String, Promise<Map<Long, ?>>> offerDetails = new HashMap<String, Promise<Map<Long, ?>>>();
 
 		List<String> itemIteration = getOrderByItemNumbers(shoppingListItemsMap);
 
@@ -572,10 +572,10 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			}
 		}
 
-		for (Entry<String, Promise<Map<Long, Object>>> entry : offerDetails.entrySet()) {
+		for (Entry<String, Promise<Map<Long, ?>>> entry : offerDetails.entrySet()) {
 
 			LOGGER.debug("Retrieving async details for type: " + entry.getKey());
-			Map<Long, Object> itemDetail = itemDetaislService.getDetailsPromiseResul(entry.getKey(), entry.getValue());
+			Map<Long, ?> itemDetail = itemDetaislService.getDetailsPromiseResul(entry.getKey(), entry.getValue());
 			LOGGER.debug("Retrived offer detail from async of size " + itemDetail.size());
 			if (ValidationHelper.isNonEmpty(itemDetail)) {
 				itemMap = shoppingListItemsMap.get(entry.getKey());
