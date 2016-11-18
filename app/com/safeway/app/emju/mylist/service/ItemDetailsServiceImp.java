@@ -79,7 +79,7 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 	
 
 	@Override
-	public Collection<ShoppingListItemVO> getItemDetails(String itemType, Map<Long, Object> itemDetailMap,
+	public Collection<ShoppingListItemVO> getItemDetails(String itemType, Map<Long, ?> itemDetailMap,
 			Map<String, ShoppingListItem> itemMap, ShoppingListVO shoppingListVO) throws ApplicationException {
 
 		ItemDetailsProvider itemDetailProvider = detailsProviderMap.get(itemType);
@@ -87,7 +87,7 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 	}
 
 	@Override
-	public Promise<Map<Long, Object>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
+	public Promise<Map<Long, ?>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
 			ShoppingListVO shoppingListVO) throws ApplicationException {
 		
 		ExecutionContext serviceContext = ExecutionContextHelper.getContext("play.akka.actor.detail-context");
@@ -98,7 +98,7 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 	}
 
 	@Override
-	public Map<Long, Object> getDetailsPromiseResul(String itemType, Promise<Map<Long, Object>> promiseItemDetail)
+	public Map<Long, ?> getDetailsPromiseResul(String itemType, Promise<Map<Long, ?>> promiseItemDetail)
 			throws ApplicationException {
 		
 		ItemDetailAsyncRetriever itemDetailAsyncRetriever = asyncDetailProviderMap.get(itemType);

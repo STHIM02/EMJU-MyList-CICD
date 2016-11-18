@@ -7,6 +7,7 @@ import com.safeway.app.emju.logging.LoggerFactory;
 
 import com.datastax.driver.mapping.Result;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ConsistencyLevel;
@@ -23,6 +24,7 @@ import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
 import com.safeway.app.emju.util.GenericConstants;
 
+@Singleton
 public class ShoppingListDAOImp implements ShoppingListDAO {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingListDAOImp.class);

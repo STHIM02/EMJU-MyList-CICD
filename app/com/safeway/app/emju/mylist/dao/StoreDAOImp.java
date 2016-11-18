@@ -1,6 +1,7 @@
 package com.safeway.app.emju.mylist.dao;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.safeway.app.emju.allocation.customerlookup.dao.CustomerLookupDAO;
 import com.safeway.app.emju.cache.StoreCache;
 import com.safeway.app.emju.cache.entity.Store;
@@ -11,6 +12,7 @@ import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.constant.Constants;
 import com.safeway.app.emju.mylist.model.PreferredStore;
 
+@Singleton
 public class StoreDAOImp implements StoreDAO {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(StoreDAOImp.class);
