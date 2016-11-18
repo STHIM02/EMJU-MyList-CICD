@@ -126,6 +126,7 @@ public class WSDetailsProvider implements ItemDetailsProvider<WeeklyAddVO> {
 			shoppingListItemVO.setId(wsItem.getClipId());
 			shoppingListItemVO.setReferenceId(wsItem.getItemId());
 			shoppingListItemVO.setItemType(wsItem.getItemTypeCd());
+			shoppingListItemVO.setWeeklyAd(weeklyAddVo);
 			
 			if (Constants.YES.equalsIgnoreCase(details)) {
 				

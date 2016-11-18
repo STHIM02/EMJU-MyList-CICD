@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.safeway.app.emju.allocation.pricing.entity.ClubPrice;
 import com.safeway.app.emju.cache.entity.OfferDetail;
 
-@JsonIgnoreProperties({"offerDetail","clubPrice"})
+@JsonIgnoreProperties({"offerDetail","clubPrice","weeklyAd"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingListItemVO {
 	
@@ -44,6 +44,7 @@ public class ShoppingListItemVO {
 	private String savingsSubCode;
 	private OfferDetail offerDetail;
 	private ClubPrice clubPrice;
+	private WeeklyAddVO weeklyAd;
 	
 	public String getId() {
 		return id;
@@ -254,6 +255,12 @@ public class ShoppingListItemVO {
 	}
 	public void setClubPrice(ClubPrice clubPrice) {
 		this.clubPrice = clubPrice;
+	}
+	public WeeklyAddVO getWeeklyAd() {
+		return weeklyAd;
+	}
+	public void setWeeklyAd(WeeklyAddVO weeklyAd) {
+		this.weeklyAd = weeklyAd;
 	}
 
 }
