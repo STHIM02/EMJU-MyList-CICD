@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.inject.Inject;
 import com.safeway.app.emju.cache.RetailScanCache;
 import com.safeway.app.emju.cache.entity.RetailScanOffer;
 import com.safeway.app.emju.exception.ApplicationException;
@@ -21,6 +22,7 @@ public class UPCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetrieve
 	
 	private RetailScanCache retailScanCache;
 	
+	@Inject
 	public UPCItemDetailAsyncRetriever(RetailScanCache retailScanCache) {
 		
 		this.retailScanCache = retailScanCache;
