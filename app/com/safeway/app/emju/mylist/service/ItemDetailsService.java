@@ -23,7 +23,7 @@ public interface ItemDetailsService {
 	Promise<Map<Long, ?>> getAsyncDetails(String itemType, Map<String, ShoppingListItem> itemMap,
 			ShoppingListVO shoppingListVO) throws ApplicationException;
 	
-	public Collection<ShoppingListItemVO> getItemDetails(String itemType, Map<Long, ?> itemDetailMap, 
+	public Collection<ShoppingListItemVO> setItemDetails(String itemType, Map<Long, ?> itemDetailMap, 
 			Map<String, ShoppingListItem> itemMap, ShoppingListVO shoppingListVO) throws ApplicationException;
 	
 	public Map<Long, ?>  getDetailsPromiseResul(String itemType, Promise<Map<Long, ?>> promiseItemDetail) 

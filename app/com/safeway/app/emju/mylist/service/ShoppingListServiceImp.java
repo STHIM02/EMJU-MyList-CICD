@@ -528,46 +528,46 @@ public class ShoppingListServiceImp implements ShoppingListService {
 
 		Map<String, ShoppingListItem> itemMap = null;
 		Map<String, Promise<Map<Long, ?>>> offerDetails = new HashMap<String, Promise<Map<Long, ?>>>();
-
+		
 		List<String> itemIteration = getOrderByItemNumbers(shoppingListItemsMap);
 
 		for (String itemType : itemIteration) {
 			
 			LOGGER.debug("Item type to set details: " + itemType);
 			itemMap = shoppingListItemsMap.get(itemType);
+			Map<String, Map<String, List<AllocatedOffer>>> matchedOffers = null;
+			
 			if (ValidationHelper.isNonEmpty(itemMap)) {
-				if (itemType.equals(ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())) {
-
-					LOGGER.info("UPC Items COUNT:: " + itemMap.size());
+				
+				if (itemType.equals(ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())
+						&& details.equals(Constants.YES)) {
+					
 					Map<Long, ShoppingListItem> upcItemMap = new HashMap<Long, ShoppingListItem>();
-
 					for (Entry<String, ShoppingListItem> upcEntry : itemMap.entrySet()) {
 
 						upcItemMap.put(Long.parseLong(upcEntry.getKey()), upcEntry.getValue());
 					}
-
-					Map<String, Map<String, List<AllocatedOffer>>> matchedOffers = null;
-					if (ValidationHelper.isNonEmpty(details) && details.equals(Constants.YES)) {
-						matchedOffers = matchOfferService.getRelatedOffers(upcItemMap, shoppingListVO.getHeaderVO());
-					}
-
+						
+					matchedOffers = matchOfferService.getRelatedOffers(upcItemMap, shoppingListVO.getHeaderVO());					
+						
 					if (ValidationHelper.isNonEmpty(matchedOffers)) {
 						cleanMatchedOffers(matchedOffers, shoppingListItemsMap);
 					}
 
-					newSLItemVoSet.addAll(
-							itemDetaislService.setItemDetails(itemType, itemMap, shoppingListVO, matchedOffers));
+				}
 
-				} else if (itemType.equals(ItemTypeCode.COUPON_ITEM.toString())
+				if (itemType.equals(ItemTypeCode.COUPON_ITEM.toString())
 						|| itemType.equals(ItemTypeCode.PERSONAL_DEAL_ITEM.toString())
 						|| itemType.equals(ItemTypeCode.CLUB_SPECIAL_ITEM.toString())
-						|| itemType.equals(ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())) {
+						|| itemType.equals(ItemTypeCode.WEEKLY_SPECIAL_ITEM.toString())
+						|| (itemType.equals(ItemTypeCode.STANDARD_PRODUCT_ITEM.toString())
+								&& !details.equals(Constants.YES))) {
 
 					offerDetails.put(itemType, itemDetaislService.getAsyncDetails(itemType, itemMap, shoppingListVO));
 
 				} else {
 
-					newSLItemVoSet.addAll(itemDetaislService.setItemDetails(itemType, itemMap, shoppingListVO, null));
+					newSLItemVoSet.addAll(itemDetaislService.setItemDetails(itemType, itemMap, shoppingListVO, matchedOffers));
 				}
 			}
 		}

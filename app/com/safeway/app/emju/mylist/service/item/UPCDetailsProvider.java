@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.safeway.app.emju.allocation.dao.PurchasedItemDAO;
 import com.safeway.app.emju.allocation.entity.PurchasedItem;
-import com.safeway.app.emju.cache.entity.OfferDetail;
+import com.safeway.app.emju.cache.entity.RetailScanOffer;
 import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.helper.DataHelper;
 import com.safeway.app.emju.helper.ValidationHelper;
@@ -29,7 +29,7 @@ import com.safeway.app.emju.mylist.model.ShoppingListVO;
 import com.safeway.app.emju.mylist.service.ItemDetailsProvider;
 
 @Singleton
-public class UPCDetailsProvider implements ItemDetailsProvider<OfferDetail> {
+public class UPCDetailsProvider implements ItemDetailsProvider<RetailScanOffer> {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UPCDetailsProvider.class);
 	
@@ -158,10 +158,59 @@ public class UPCDetailsProvider implements ItemDetailsProvider<OfferDetail> {
 	}
 
 	@Override
-	public Collection<ShoppingListItemVO> getItemDetails(Map<Long, OfferDetail> offerDetailMap,
+	public Collection<ShoppingListItemVO> getItemDetails(Map<Long, RetailScanOffer> itemDetailMap,
 			Map<String, ShoppingListItem> itemMap, ShoppingListVO shoppingListVO) throws ApplicationException {
 		
-		return null;
+		Map<String, ShoppingListItemVO> upcItemsMap = new HashMap<String, ShoppingListItemVO>();
+		Map<Long, PurchasedItem> purchaseMap = null;
+		ShoppingListItemVO shoppingListItemVO = null;
+		ShoppingListItem productItem = null;
+		Integer ttl = null;
+		
+		Long hhid = Long.valueOf(shoppingListVO.getHeaderVO().getSwyhouseholdid());
+		
+		try {
+			
+			purchaseMap = purchasedItemDAO.findItemsByHousehold(hhid);
+			
+			
+		} catch (Exception e) {
+			
+			LOGGER.error("An exceotion ocurrend while trying to get purchase iten information");
+		}
+		
+		purchaseMap = ValidationHelper.isNonEmpty(purchaseMap) ? purchaseMap : new HashMap<Long, PurchasedItem>();
+		
+		for(Entry<String, ShoppingListItem> entry : itemMap.entrySet()) {
+			
+			productItem = entry.getValue();
+			
+			if(purchaseMap.get(Long.valueOf(entry.getKey())) == null ||
+					itemDetailMap.get(Long.valueOf(entry.getKey())) == null) {
+				
+				if(productItem.getTtl() == null || productItem.getTtl() == 0) {
+					
+					ttl = DataHelper.getTTLsetup(new Date(), 0, 1);
+					productItem.setTtl(ttl);
+					shoppingListVO.getUpdateUPCItem().add(productItem);
+				}
+				continue;
+			}
+			
+			shoppingListItemVO = new ShoppingListItemVO();
+
+			upcItemsMap.put(entry.getKey(), populateUPCItem(productItem, shoppingListItemVO));
+		}
+
+		return upcItemsMap.values();
+	}
+	
+	private ShoppingListItemVO populateUPCItem(ShoppingListItem upcItem, ShoppingListItemVO shoppingListItemVO) {
+		
+		shoppingListItemVO.setId(upcItem.getClipId());
+		shoppingListItemVO.setItemType(upcItem.getItemTypeCd());
+		
+		return shoppingListItemVO;
 	}
 
 }
