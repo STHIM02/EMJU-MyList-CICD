@@ -580,7 +580,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			if (ValidationHelper.isNonEmpty(itemDetail)) {
 				itemMap = shoppingListItemsMap.get(entry.getKey());
 				newSLItemVoSet
-						.addAll(itemDetaislService.getItemDetails(entry.getKey(), itemDetail, itemMap, shoppingListVO));
+						.addAll(itemDetaislService.setItemDetails(entry.getKey(), itemDetail, itemMap, shoppingListVO));
 			}
 		}
 
