@@ -7,6 +7,7 @@ import com.safeway.app.emju.mylist.service.ItemDetailAsyncRetriever;
 import com.safeway.app.emju.mylist.service.ItemDetailsProvider;
 import com.safeway.app.emju.mylist.service.detail.CCItemDetailAsyncRetriever;
 import com.safeway.app.emju.mylist.service.detail.PDItemDetailAsyncRetriever;
+import com.safeway.app.emju.mylist.service.detail.UPCItemDetailAsyncRetriever;
 import com.safeway.app.emju.mylist.service.detail.WSItemDetailAsyncRetriever;
 import com.safeway.app.emju.mylist.service.detail.YCSItemDetailAsyncRetriever;
 import com.safeway.app.emju.mylist.service.item.CCDetailsProvider;
@@ -34,6 +35,7 @@ public class AppStartModule extends AbstractModule {
 		bind(ItemDetailsProvider.class).annotatedWith(Names.named("ELP")).to(ELPDetailsProvider.class);
 		bind(ItemDetailsProvider.class).annotatedWith(Names.named("REC")).to(RECDetailsProvider.class);
 		
+		bind(ItemDetailAsyncRetriever.class).annotatedWith(Names.named("UPC")).to(UPCItemDetailAsyncRetriever.class);
 		bind(ItemDetailAsyncRetriever.class).annotatedWith(Names.named("CC")).to(CCItemDetailAsyncRetriever.class);
 		bind(ItemDetailAsyncRetriever.class).annotatedWith(Names.named("PD")).to(PDItemDetailAsyncRetriever.class);
 		bind(ItemDetailAsyncRetriever.class).annotatedWith(Names.named("YCS")).to(YCSItemDetailAsyncRetriever.class);

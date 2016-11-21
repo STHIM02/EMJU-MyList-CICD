@@ -15,7 +15,7 @@ public class HeaderVO {
 	private String appKey;
 	private String appVersion;
 	private String bannner;
-	private String details;
+	private String details = "n";
 	private String timeZone;
 	private String loggedUserId;
 	private String paramStoreId;

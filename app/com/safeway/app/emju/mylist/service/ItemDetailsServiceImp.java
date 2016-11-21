@@ -42,6 +42,7 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 			@Named("WS") ItemDetailsProvider wsProvider,
 			@Named("ELP") ItemDetailsProvider elpProvider,
 			@Named("REC") ItemDetailsProvider recProvider,
+			@Named("UPC") ItemDetailAsyncRetriever upcAsyncProvider,
 			@Named("CC") ItemDetailAsyncRetriever ccAsyncProvider,
 			@Named("PD") ItemDetailAsyncRetriever pdAsyncProvider,
 			@Named("YCS") ItemDetailAsyncRetriever ycsAsyncProvider,
@@ -59,6 +60,7 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 		detailsProviderMap.put(ItemType.REC, recProvider);
 		
 		asyncDetailProviderMap = new HashMap<String, ItemDetailAsyncRetriever>();
+		asyncDetailProviderMap.put(ItemType.UPC, upcAsyncProvider);
 		asyncDetailProviderMap.put(ItemType.CC, ccAsyncProvider);
 		asyncDetailProviderMap.put(ItemType.PD, pdAsyncProvider);
 		asyncDetailProviderMap.put(ItemType.YCS, ycsAsyncProvider);
@@ -79,7 +81,7 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 	
 
 	@Override
-	public Collection<ShoppingListItemVO> getItemDetails(String itemType, Map<Long, ?> itemDetailMap,
+	public Collection<ShoppingListItemVO> setItemDetails(String itemType, Map<Long, ?> itemDetailMap,
 			Map<String, ShoppingListItem> itemMap, ShoppingListVO shoppingListVO) throws ApplicationException {
 
 		ItemDetailsProvider itemDetailProvider = detailsProviderMap.get(itemType);
@@ -92,7 +94,6 @@ public class ItemDetailsServiceImp implements ItemDetailsService {
 		
 		ExecutionContext serviceContext = ExecutionContextHelper.getContext("play.akka.actor.detail-context");
 		ItemDetailAsyncRetriever itemDetailAsyncRetriever = asyncDetailProviderMap.get(itemType);
-//		return itemDetailAsyncRetriever.getAsyncDetails(itemType, itemMap, shoppingListVO);
 		return itemDetailAsyncRetriever.getAsyncDetails(itemType, itemMap, shoppingListVO, serviceContext);
 		
 	}
