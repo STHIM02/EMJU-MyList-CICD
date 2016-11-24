@@ -20,6 +20,7 @@ import com.safeway.app.emju.mylist.service.ItemDetailsProvider;
 
 public abstract class OFRDetailsProvider<T> implements ItemDetailsProvider<T> {
 	
+	@SuppressWarnings({"unused"})
 	private static final Logger LOGGER = LoggerFactory.getLogger(OFRDetailsProvider.class);
 
 	@Override
@@ -30,7 +31,6 @@ public abstract class OFRDetailsProvider<T> implements ItemDetailsProvider<T> {
 	protected ShoppingListItemVO getOfferItemDefinitions(OfferDetail offerDetail, ShoppingListItem shoppingListItem,
 			ShoppingListVO shoppingListVO) throws Exception {
 
-		LOGGER.info("<< getOfferItemDefinitions");
 		ShoppingListItemVO shoppingListItemVO = new ShoppingListItemVO();
 		String details = shoppingListVO.getHeaderVO().getDetails();
 		String clientTimezone = shoppingListVO.getHeaderVO().getPreferredStore().getTimeZone();
