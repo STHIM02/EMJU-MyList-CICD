@@ -367,11 +367,18 @@ public class ShoppingListServiceImp implements ShoppingListService {
 		}
 		if(ValidationHelper.isNonEmpty(updatebleItems)) {
 			
-			ListItemMaintainanceService maintainanceService = 
-					new ListItemMaintainanceService(updatebleItems, shoppingListDAO);
-			
 			ExecutionContext executor = ExecutionContextHelper.getContext("play.akka.actor.ttl-context");
-			executor.execute(maintainanceService);
+			executor.execute(() -> {
+				try {
+					
+					LOGGER.debug("Updating list of items: " + updatebleItems);
+					shoppingListDAO.insertShoppingListItems(updatebleItems);
+					
+				} catch(ApplicationException e) {
+					
+					LOGGER.error("An exception happened when trying insert with TTL: " + e);
+				}
+			});
 		}
 	}
 
