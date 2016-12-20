@@ -5,6 +5,9 @@ name := """emju-mylist"""
 resolvers += "EMJU repository" at "http://albertsons-binrepo.westus.cloudapp.azure.com/artifactory/libs-release-local/"
 scalaVersion := "2.11.7" 
 
+//Code Coverage via JaCoCo 
+jacoco.settings
+
 //*********CI build and release process start********************
 //customize release process using release plugin:
 //  commented out Git related steps
@@ -27,6 +30,9 @@ releaseProcess := {
 //        pushChanges
     )
 }
+
+//make sure that parallelExecution is off during test execution
+parallelExecution in jacoco.Config := false
 
 //Disable commit check for no untracked files in working directory (requires release plug in version 1.0.3)
 releaseIgnoreUntrackedFiles := true
