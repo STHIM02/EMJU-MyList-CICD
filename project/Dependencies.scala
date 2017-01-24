@@ -14,8 +14,10 @@ object Dependencies {
   }
   
   object emju {
-    val common		= "emju-common" % "emju-common_2.11" % "2.9.0"
-    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.12.0"
+    val commoncore	= "emju-common-core" % "emju-common-core_2.11" % "3.0.0"
+    val commonauth	= "emju-common-auth" % "emju-common-auth_2.11" % "3.0.0"
+    val commonmail	= "emju-common-mail" % "emju-common-mail_2.11" % "3.0.0"
+    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.15.0"
   }
 
   val json		= "com.fasterxml.jackson.core" % "jackson-core" % "2.6.1"
@@ -42,7 +44,9 @@ object Dependencies {
     test,
     filters,
     gson, 
-    emju.common,
+    emju.commoncore,
+    emju.commonauth,
+    emju.commonmail,
     emju.allocation
   )
 
