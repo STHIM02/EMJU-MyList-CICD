@@ -260,6 +260,11 @@ public class ShoppingListController extends Controller {
         	LOGGER.info("ccaOrswy is " + ccaOrswy);
         	String banner = null;
             String apiVersion = null;
+            
+            if(ccaOrswy.equalsIgnoreCase("_CCA")) {
+            	LOGGER.debug("CCA client, read profile from HTTP headers");
+        		profileMap = headermap;
+            }
 
             if (checkForNullAndEmptyHeaders(profileMap
                     .get(headerKey.get("CUST_GUID" + ccaOrswy)))) {
