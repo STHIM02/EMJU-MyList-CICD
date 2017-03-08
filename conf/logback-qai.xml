@@ -1,79 +1,109 @@
 <configuration>
-    
+
 	<conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%coloredLevel - %logger - %message%n%xException</pattern>
+			<pattern>%d{"yyyy-MM-dd HH:mm:ss.SSS"} %coloredLevel - %logger - %message%n%xException</pattern>
 		</encoder>
 	</appender>
-	
-	<appender name="RSYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
-		<syslogHost>localhost</syslogHost>
-		<facility>USER</facility>
-		<suffixPattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"} [%level] [%thread] %c: %message%n%xException</suffixPattern>
+    
+    <property name="app.name" value="emju-mylist"/>
+    <property name="log.dir.emju" value="/share/logs"/>
+    <property name="log.dir.access" value="/share/logs"/>
+    <property name="log.dir.playd" value="/share/logs"/>
+    <property name="log.dir.archive" value="/share/archive"/>
+    
+    <appender name="playd_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.dir.playd}/playd.log</file>
+		<encoder>
+			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"} [%level] [%thread] %c: %message%n%xException</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+			<fileNamePattern>${log.dir.archive}/playd-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+       		<!-- each file should be at most 50MB, keep 7 days worth of history, but at most 100MB -->
+       		<maxFileSize>50MB</maxFileSize>    
+       		<maxHistory>7</maxHistory>
+       		<totalSizeCap>100MB</totalSizeCap>
+    	</rollingPolicy>
 	</appender>
-  
-	<appender name="emju_mylist_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/share/play_deployment/logs/emju/mylist/emju_mylist.log</file>
+	
+	<appender name="emju_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.dir.emju}/${app.name}.log</file>
 		<encoder>
 			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"} [%level] [%thread] %c: %message%n%xException</pattern>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>DEBUG</level>
 		</filter>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- rollover daily -->
-			<fileNamePattern>/share/play_deployment/logs/emju/mylist/emju_mylist-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<!-- or whenever the file size reaches 5MB -->
-				<maxFileSize>5MB</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>7</maxHistory>
-		</rollingPolicy>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+			<fileNamePattern>${log.dir.archive}/${app.name}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+       		<!-- each file should be at most 1GB, keep 7 days worth of history, but at most 2GB -->
+       		<maxFileSize>1GB</maxFileSize>    
+       		<maxHistory>1</maxHistory>
+       		<totalSizeCap>2GB</totalSizeCap>
+    	</rollingPolicy>
 	</appender>
-	
+
 	<appender name="access_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/share/play_deployment/logs/emju/mylist/access.log</file>
+		<file>${log.dir.access}/access.log</file>
 		<encoder>
 			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"}: %message%n</pattern>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
+			<level>INFO</level>
 		</filter>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- rollover daily -->
-			<fileNamePattern>/share/play_deployment/logs/emju/mylist/access-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<!-- or whenever the file size reaches 5MB -->
-				<maxFileSize>5MB</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>7</maxHistory>
-		</rollingPolicy>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      		<!-- rollover daily -->
+			<fileNamePattern>${log.dir.archive}/access-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+       		<!-- each file should be at most 5MB, keep 7 days worth of history, but at most 100MB -->
+       		<maxFileSize>5MB</maxFileSize>    
+       		<maxHistory>7</maxHistory>
+       		<totalSizeCap>100MB</totalSizeCap>
+    	</rollingPolicy>
 	</appender>
 	
-	<appender name="emju_mylist_async_appender" class="ch.qos.logback.classic.AsyncAppender">
-		<appender-ref ref="emju_mylist_appender" />
+	<appender name="playd_async_appender" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="playd_appender" />
 	</appender>
 	
+	<appender name="emju_async_appender" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="emju_appender" />
+	</appender>
+
 	<appender name="access_async_appender" class="ch.qos.logback.classic.AsyncAppender">
 		<appender-ref ref="access_appender" />
 	</appender>
 	
-	<logger name="accessLogger">
+	<!-- Off these ones as they are annoying, and anyway we manage configuration ourself -->
+	<logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />
+	<logger name="com.avaje.ebeaninternal.server.core.XmlConfigLoader" level="OFF" />
+	<logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
+	<logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
+	
+	<logger name="play" level="INFO" />
+    
+	<logger name="accessLogger" additivity="false">
 		<appender-ref ref="access_async_appender" />
 	</logger>
-
-	<logger name="appLogger">
-		<appender-ref ref="emju_mylist_async_appender" />
+	
+	<logger name="appLogger" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="emju_async_appender" />
 	</logger>
-	<logger name="com.safeway">
-		<appender-ref ref="emju_mylist_async_appender" />
-		<appender-ref ref="RSYSLOG" />
+	<logger name="com.safeway" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="emju_async_appender" />
 	</logger>
 	
 	<root level="INFO">
-	   <appender-ref ref="RSYSLOG" />
+       <appender-ref ref="STDOUT" />
+       <appender-ref ref="playd_async_appender" />
 	</root>
 
 </configuration>

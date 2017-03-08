@@ -29,6 +29,8 @@ object Dependencies {
   val qpidamqp 		= "org.apache.qpid" % "qpid-amqp-1-0-client-jms" % "0.32"
   val jms      		= "org.apache.geronimo.specs" % "geronimo-jms_1.1_spec" % "1.1.1"
   val gson 		= "com.google.code.gson" % "gson" % "2.3.1" 
+  val logbackCore = "ch.qos.logback" % "logback-core" % "1.2.1"
+  val logbackClassic = "ch.qos.logback" % "logback-classic" % "1.2.1"
 
   val playDependencies: Seq[ModuleID] = Seq(
     cache,
@@ -47,7 +49,9 @@ object Dependencies {
     emju.commoncore,
     emju.commonauth,
     emju.commonmail,
-    emju.allocation
+    emju.allocation,
+    logbackCore,
+    logbackClassic
   )
 
   val serviceDependencies: Seq[ModuleID] = playDependencies ++ Seq(
