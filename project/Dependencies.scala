@@ -14,7 +14,8 @@ object Dependencies {
   }
   
   object emju {
-    val common		= "emju-common" % "emju-common_2.11" % "2.10.1"
+    val commoncore	= "emju-common-core" % "emju-common-core_2.11" % "3.0.0"
+    val commonauth	= "emju-common-auth" % "emju-common-auth_2.11" % "3.0.0"
     val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.16.0"
   }
 
@@ -44,7 +45,8 @@ object Dependencies {
     test,
     filters,
     gson, 
-    emju.common,
+    emju.commoncore,
+    emju.commonauth,
     emju.allocation,
     logbackCore,
     logbackClassic
