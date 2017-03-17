@@ -17,7 +17,6 @@ object Dependencies {
     val commoncore	= "emju-common-core" % "emju-common-core_2.11" % "3.0.0"
     val commonauth	= "emju-common-auth" % "emju-common-auth_2.11" % "3.0.0"
     val commonmail	= "emju-common-mail" % "emju-common-mail_2.11" % "3.0.0"
-    val commoncache	= "emju-common-cache" % "emju-common-cache_2.11" % "3.0.0"
     val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.16.0"
   }
 
