@@ -44,7 +44,7 @@ object Dependencies {
     test,
     filters,
     gson, 
-    emju.common
+    emju.common,
     emju.allocation,
     logbackCore,
     logbackClassic
