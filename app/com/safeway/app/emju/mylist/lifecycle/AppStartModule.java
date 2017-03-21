@@ -2,6 +2,8 @@ package com.safeway.app.emju.mylist.lifecycle;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+import com.safeway.app.emju.allocation.requestidentification.parser.ConsumerRequestParser;
+import com.safeway.app.emju.allocation.requestidentification.parser.RequestParser;
 import com.safeway.app.emju.mail.service.EmailDispatcherImp;
 import com.safeway.app.emju.mylist.service.ItemDetailAsyncRetriever;
 import com.safeway.app.emju.mylist.service.ItemDetailsProvider;
@@ -42,6 +44,8 @@ public class AppStartModule extends AbstractModule {
 		bind(ItemDetailAsyncRetriever.class).annotatedWith(Names.named("WS")).to(WSItemDetailAsyncRetriever.class);
 		
         bind(EmailDispatcherImp.class).asEagerSingleton();
+        
+        bind(RequestParser.class).annotatedWith(Names.named("CRP")).to(ConsumerRequestParser.class);
 	}
 
 }
