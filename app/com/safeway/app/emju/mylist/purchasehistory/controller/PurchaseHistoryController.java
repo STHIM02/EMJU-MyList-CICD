@@ -17,6 +17,7 @@ import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.safeway.app.emju.allocation.requestidentification.model.ProfileIdentifiers.CustomerProfileDataIdentifiers;
 import com.safeway.app.emju.allocation.requestidentification.model.ProfileIdentifiers.URLParamsIdentifiers;
 import com.safeway.app.emju.allocation.requestidentification.parser.RequestParser;
@@ -58,7 +59,7 @@ public class PurchaseHistoryController extends Controller {
     private PurchaseHistoryRequestParser phRequestParser;
 
     @Inject
-    public PurchaseHistoryController(final RequestParser requestParser, PurchaseHistoryService purchaseHistoryService) {
+    public PurchaseHistoryController(@Named("CRP")final RequestParser requestParser, PurchaseHistoryService purchaseHistoryService) {
         this.purchaseHistoryService = purchaseHistoryService;
         this.requestParser = requestParser;
         this.phRequestParser = new PurchaseHistoryRequestParser();

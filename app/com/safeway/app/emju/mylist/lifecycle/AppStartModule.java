@@ -46,6 +46,8 @@ public class AppStartModule extends AbstractModule {
 		bind(ItemDetailAsyncRetriever.class).annotatedWith(Names.named("WS")).to(WSItemDetailAsyncRetriever.class);
 		
         bind(EmailDispatcherImp.class).asEagerSingleton();
+        
+        bind(RequestParser.class).annotatedWith(Names.named("CRP")).to(ConsumerRequestParser.class);
 	}
 
 }
