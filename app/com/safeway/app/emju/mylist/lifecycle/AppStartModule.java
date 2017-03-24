@@ -27,8 +27,6 @@ public class AppStartModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		
-		bind(RequestParser.class).to(ConsumerRequestParser.class);
-		
 		bind(ItemDetailsProvider.class).annotatedWith(Names.named("UPC")).to(UPCDetailsProvider.class);
 		bind(ItemDetailsProvider.class).annotatedWith(Names.named("CC")).to(CCDetailsProvider.class);
 		bind(ItemDetailsProvider.class).annotatedWith(Names.named("PD")).to(PDDetailsProvider.class);
