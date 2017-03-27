@@ -14,8 +14,8 @@ object Dependencies {
   }
   
   object emju {
-    val common		= "emju-common" % "emju-common_2.11" % "2.10.1"
-    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.13.0"
+    val common		= "emju-common" % "emju-common_2.11" % "2.16.0"
+    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.16.0"
   }
 
   val json		= "com.fasterxml.jackson.core" % "jackson-core" % "2.6.1"
@@ -26,7 +26,9 @@ object Dependencies {
   val jedis     	= "redis.clients" % "jedis" % "2.7.3"
   val qpidamqp 		= "org.apache.qpid" % "qpid-amqp-1-0-client-jms" % "0.32"
   val jms      		= "org.apache.geronimo.specs" % "geronimo-jms_1.1_spec" % "1.1.1"
-  val gson 		= "com.google.code.gson" % "gson" % "2.3.1" 
+  val gson 		= "com.google.code.gson" % "gson" % "2.3.1"
+  val logbackCore = "ch.qos.logback" % "logback-core" % "1.2.1"
+  val logbackClassic = "ch.qos.logback" % "logback-classic" % "1.2.1"
 
   val playDependencies: Seq[ModuleID] = Seq(
     cache,
@@ -43,7 +45,9 @@ object Dependencies {
     filters,
     gson, 
     emju.common,
-    emju.allocation
+    emju.allocation,
+    logbackCore,
+    logbackClassic
   )
 
   val serviceDependencies: Seq[ModuleID] = playDependencies ++ Seq(
