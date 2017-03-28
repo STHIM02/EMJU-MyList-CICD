@@ -44,8 +44,8 @@
       		<!-- rollover daily -->
 			<fileNamePattern>${log.dir.archive}/${app.name}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
        		<!-- each file should be at most 1GB, keep 7 days worth of history, but at most 2GB -->
-       		<maxFileSize>1GB</maxFileSize>    
-       		<maxHistory>1</maxHistory>
+       		<maxFileSize>50MB</maxFileSize>    
+       		<maxHistory>7</maxHistory>
        		<totalSizeCap>2GB</totalSizeCap>
     	</rollingPolicy>
 	</appender>
@@ -86,23 +86,20 @@
 	<logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
 	<logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
 	
-	<logger name="play" level="ERROR" />
+	<logger name="play" level="INFO" />
     
 	<logger name="accessLogger" additivity="false">
 		<appender-ref ref="access_async_appender" />
 	</logger>
 	
 	<logger name="appLogger" additivity="false">
-		<appender-ref ref="STDOUT" />
 		<appender-ref ref="emju_async_appender" />
 	</logger>
 	<logger name="com.safeway" additivity="false">
-		<appender-ref ref="STDOUT" />
 		<appender-ref ref="emju_async_appender" />
 	</logger>
 	
-	<root level="ERROR">
-       <appender-ref ref="STDOUT" />
+	<root level="INFO">
        <appender-ref ref="playd_async_appender" />
 	</root>
 
