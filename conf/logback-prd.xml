@@ -8,6 +8,12 @@
 		</encoder>
 	</appender>
     
+    <appender name="RSYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
+        <syslogHost>localhost</syslogHost>
+        <facility>USER</facility>
+        <suffixPattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"} [%level] [%thread] %c: %message%n%xException</suffixPattern>
+    </appender>
+    
     <property name="app.name" value="emju-mylist"/>
     <property name="log.dir.emju" value="/share/logs"/>
     <property name="log.dir.access" value="/share/logs"/>
@@ -90,17 +96,21 @@
     
 	<logger name="accessLogger" additivity="false">
 		<appender-ref ref="access_async_appender" />
+        <appender-ref ref="RSYSLOG" />
 	</logger>
 	
 	<logger name="appLogger" additivity="false">
 		<appender-ref ref="emju_async_appender" />
+        <appender-ref ref="RSYSLOG" />
 	</logger>
 	<logger name="com.safeway" additivity="false">
 		<appender-ref ref="emju_async_appender" />
+        <appender-ref ref="RSYSLOG" />
 	</logger>
 	
 	<root level="INFO">
        <appender-ref ref="playd_async_appender" />
+       <appender-ref ref="RSYSLOG" />
 	</root>
 
 </configuration>
