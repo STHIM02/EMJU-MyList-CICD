@@ -67,15 +67,18 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 	private OfferStorePriceDAO pricingDAO;
 	private PartnerAllocationService partnerAllocationService;
 	
-	Configuration config = Play.application().configuration();
-
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MatchOfferServiceImp.class);
+	
+	private static final String PROMISE_TIMEOUT = "promise.timeout";
+	
+	private Configuration config;
 
 	@Inject
 	public MatchOfferServiceImp(PurchasedItemDAO purchasedItemDAO, ClubPriceDAO clubPriceDao,
 			OfferStatusService offerStatusService, RetailScanCache retailScanCache, 
 			PDAllocationDAO pdAllocationDAO, CCAllocationDAO ccAllocationDAO, OfferDetailCache offerCache, 
-			OfferStorePriceDAO pricingDAO, PartnerAllocationService partnerAllocationService) {
+			OfferStorePriceDAO pricingDAO, PartnerAllocationService partnerAllocationService, Configuration config) {
 
 		this.purchasedItemDAO = purchasedItemDAO;
 		this.clubPriceDao = clubPriceDao;
@@ -86,6 +89,7 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 		this.offerCache = offerCache;
 		this.pricingDAO = pricingDAO;
 		this.partnerAllocationService = partnerAllocationService;
+		this.config = config;
 	}
 
 	@Override
@@ -236,8 +240,11 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 			// get CC offer related to upc list
 			LOGGER.debug("MatchOfferServiceImp before retrieving partner allocation");
 			List<Long> partnerAllocation = null;
+			
+			Long PROMISE_TIMEOUT_MS = config.getLong(PROMISE_TIMEOUT);
+			
 			try {
-				partnerAllocation = partnerAllocationPromise.get(750, TimeUnit.MILLISECONDS);
+				partnerAllocation = partnerAllocationPromise.get(PROMISE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 			} catch (Exception e) {
 	            LOGGER.error("Unable to retrieve Partner Allocation within 1 second", e);
 	        }
