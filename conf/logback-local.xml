@@ -9,31 +9,31 @@
 	</appender>
     
     <property name="app.name" value="emju-mylist"/>
-    <property name="log.folder.emju" value="/share/logs"/>
-    <property name="log.folder.access" value="/share/access"/>
-    <property name="log.folder.playd" value="/share/playd"/>
-    <property name="log.folder.archive" value="/share/archive"/>
+    <property name="log.dir.emju" value="/share/logs"/>
+    <property name="log.dir.access" value="/share/logs"/>
+    <property name="log.dir.playd" value="/share/logs"/>
+    <property name="log.dir.archive" value="/share/archive"/>
     
     <appender name="playd_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.folder.playd}/playd.log</file>
+        <file>${log.dir.playd}/playd.log</file>
 		<encoder>
 			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"} [%level] [%thread] %c: %message%n%xException</pattern>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
+			<level>ERROR</level>
 		</filter>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       		<!-- rollover daily -->
-			<fileNamePattern>${log.folder.archive}/playd-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-       		<!-- each file should be at most 5MB, keep 7 days worth of history, but at most 1GB -->
+			<fileNamePattern>${log.dir.archive}/playd-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+       		<!-- each file should be at most 50MB, keep 7 days worth of history, but at most 100MB -->
        		<maxFileSize>50MB</maxFileSize>    
        		<maxHistory>7</maxHistory>
-       		<totalSizeCap>1GB</totalSizeCap>
+       		<totalSizeCap>100MB</totalSizeCap>
     	</rollingPolicy>
 	</appender>
 	
 	<appender name="emju_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.folder.emju}/${app.name}.log</file>
+        <file>${log.dir.emju}/${app.name}.log</file>
 		<encoder>
 			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"} [%level] [%thread] %c: %message%n%xException</pattern>
 		</encoder>
@@ -42,16 +42,16 @@
 		</filter>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       		<!-- rollover daily -->
-			<fileNamePattern>${log.folder.archive}/${app.name}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-       		<!-- each file should be at most 5MB, keep 7 days worth of history, but at most 1GB -->
+			<fileNamePattern>${log.dir.archive}/${app.name}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+       		<!-- each file should be at most 1GB, keep 7 days worth of history, but at most 2GB -->
        		<maxFileSize>1GB</maxFileSize>    
-       		<maxHistory>0</maxHistory>
-       		<totalSizeCap>1GB</totalSizeCap>
+       		<maxHistory>1</maxHistory>
+       		<totalSizeCap>2GB</totalSizeCap>
     	</rollingPolicy>
 	</appender>
 
 	<appender name="access_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${log.folder.access}/access.log</file>
+		<file>${log.dir.access}/access.log</file>
 		<encoder>
 			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSSXX"}: %message%n</pattern>
 		</encoder>
@@ -60,12 +60,16 @@
 		</filter>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       		<!-- rollover daily -->
-			<fileNamePattern>${log.folder.archive}/access-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-       		<!-- each file should be at most 5MB, keep 7 days worth of history, but at most 1GB -->
-       		<maxFileSize>50MB</maxFileSize>    
+			<fileNamePattern>${log.dir.archive}/access-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+       		<!-- each file should be at most 5MB, keep 7 days worth of history, but at most 100MB -->
+       		<maxFileSize>5MB</maxFileSize>    
        		<maxHistory>7</maxHistory>
-       		<totalSizeCap>1GB</totalSizeCap>
+       		<totalSizeCap>100MB</totalSizeCap>
     	</rollingPolicy>
+	</appender>
+	
+	<appender name="playd_async_appender" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="playd_appender" />
 	</appender>
 	
 	<appender name="emju_async_appender" class="ch.qos.logback.classic.AsyncAppender">
@@ -82,7 +86,7 @@
 	<logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
 	<logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
 	
-	<logger name="play" level="DEBUG" />
+	<logger name="play" level="INFO" />
     
 	<logger name="accessLogger" additivity="false">
 		<appender-ref ref="access_async_appender" />
@@ -97,9 +101,9 @@
 		<appender-ref ref="emju_async_appender" />
 	</logger>
 	
-	<root level="DEBUG">
+	<root level="INFO">
        <appender-ref ref="STDOUT" />
-       <appender-ref ref="playd_appender" />
+       <appender-ref ref="playd_async_appender" />
 	</root>
 
 </configuration>
