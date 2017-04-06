@@ -96,7 +96,6 @@
     
 	<logger name="accessLogger" additivity="false">
 		<appender-ref ref="access_async_appender" />
-        <appender-ref ref="RSYSLOG" />
 	</logger>
 	
 	<logger name="appLogger" additivity="false">
