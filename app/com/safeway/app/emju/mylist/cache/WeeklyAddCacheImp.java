@@ -3,6 +3,7 @@ package com.safeway.app.emju.mylist.cache;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 import com.safeway.app.emju.cache.CacheAccessException;
-import com.safeway.app.emju.cache.RedisCacheManager;
+import com.safeway.emju.redis.RedisCacheManager;
 import com.safeway.app.emju.cache.dao.StoreDBException;
 import com.safeway.app.emju.exception.ApplicationException;
 import com.safeway.app.emju.exception.FaultCodeBase;
@@ -27,7 +28,6 @@ import com.safeway.app.emju.mylist.dao.WeeklyAddDAO;
 import com.safeway.app.emju.mylist.entity.WeeklyAdd;
 import com.safeway.app.emju.mylist.model.WeeklyAddVO;
 
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 public class WeeklyAddCacheImp implements WeeklyAddCache {
@@ -35,7 +35,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 	private final static Logger LOGGER = LoggerFactory.getLogger(WeeklyAddCacheImp.class);
 	private final static ObjectReader JSON_MAPPER = new ObjectMapper().reader(WeeklyAddVO.class);
 
-	private final RedisCacheManager redisCacheManager;
+	private RedisCacheManager redisManager;
 	private final WeeklyAddDAO weeklyAddDAO;
 
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -43,7 +43,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 	@Inject
 	private WeeklyAddCacheImp(final RedisCacheManager redisCacheManager, final WeeklyAddDAO weeklyAddDAO) {
 
-		this.redisCacheManager = redisCacheManager;
+		this.redisManager = redisCacheManager;
 		this.weeklyAddDAO = weeklyAddDAO;
 	}
 
@@ -53,7 +53,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 		Map<String, WeeklyAddVO> result = new HashMap<String, WeeklyAddVO>();
 
 		LOGGER.info("@WeeklyAddCacheImp.getWeeklyAddByOfferId");
-		try (Jedis jedis = redisCacheManager.createAndReturnJedisConnectionFromPool()) {
+		try {
 
 			LOGGER.debug("Got redis connection to retrieve WS details");
 			List<String> redisKeys = offerIds.stream().map(id -> {
@@ -63,7 +63,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 			List<String> jsonValues = new ArrayList<String>();
 			if (!redisKeys.isEmpty()) {
 				String[] strKeys = redisKeys.toArray(new String[redisKeys.size()]);
-				jsonValues = jedis.mget(strKeys);
+				jsonValues = redisManager.mget(strKeys);
 			}
 
 			if (!jsonValues.isEmpty()) {
@@ -91,17 +91,19 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 				WeeklyAddVO weeklyAddVO = mapJsonToObject(jsonValue);
 
 				String sKey = WEEKLYADD_CACHE_KEY_PREFIX + weeklyAdd.getOfferId();
-				jedis.set(sKey, jsonValue);
 
 				if(weeklyAddVO != null) {
 					String endDate = weeklyAddVO.getEndDate();
 					Date expDate = null;
+					Date initDate = new Date();
 					if (ValidationHelper.isNonEmpty(endDate)) {
 						expDate = dateFormat.parse(endDate);
 					} else {
 						expDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
 					}
-					jedis.expireAt(sKey, expDate.getTime());
+					
+					Duration duration = Duration.between(initDate.toInstant(), expDate.toInstant());
+					redisManager.setString(sKey, jsonValue, duration);
 				}
 				result.put(weeklyAdd.getOfferId(), weeklyAddVO);
 			}
@@ -158,7 +160,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 
 	public void refresh(final List<String> offerIds) throws CacheAccessException {
 
-		try (Jedis jedis = redisCacheManager.createAndReturnJedisConnectionFromPool()) {
+		try {
 
 			List<String> redisKeys = offerIds.stream().map(id -> {
 				return WEEKLYADD_CACHE_KEY_PREFIX + id;
@@ -167,7 +169,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 			if (!redisKeys.isEmpty()) {
 				String[] strKeys = redisKeys.toArray(new String[redisKeys.size()]);
 				LOGGER.info("Removing from Redis Cache : " + redisKeys.size() + " offerIds");
-				Long status = jedis.del(strKeys);
+				Long status = redisManager.del(strKeys);
 				if (status > 0) {
 					LOGGER.info("Successfully removed OfferIds from Redis Cache");
 				}
@@ -179,7 +181,7 @@ public class WeeklyAddCacheImp implements WeeklyAddCache {
 				weeklyAddList.forEach((final WeeklyAdd weeklyAdd) -> {
 					String weeklyAddJson = weeklyAdd.getResponse();
 					String jedisKey = WEEKLYADD_CACHE_KEY_PREFIX + weeklyAdd.getOfferId();
-					jedis.set(jedisKey, weeklyAddJson);
+					redisManager.set(jedisKey, weeklyAddJson);
 				});
 			}
 

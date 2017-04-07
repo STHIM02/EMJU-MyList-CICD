@@ -62,7 +62,6 @@ import com.safeway.app.emju.allocation.pricing.entity.ClubPrice;
 import com.safeway.app.emju.allocation.pricing.entity.OfferStorePrice;
 import com.safeway.app.emju.cache.CacheAccessException;
 import com.safeway.app.emju.cache.OfferDetailCache;
-import com.safeway.app.emju.cache.RedisCacheManager;
 import com.safeway.app.emju.cache.RetailScanCache;
 import com.safeway.app.emju.cache.StoreCache;
 import com.safeway.app.emju.cache.dao.RetailScanOfferDAO;
@@ -112,8 +111,6 @@ public class PurchaseHistoryServiceTest {
     private OfferDetailCache offerDetailCache;
 
     private static CassandraConnector cassandraConn;
-
-    private static RedisCacheManager redisCache;
 
     private RetailScanOfferDAO retailScanOfferDAO;
 
