@@ -45,7 +45,6 @@ import com.safeway.app.emju.allocation.exception.FaultCode;
 import com.safeway.app.emju.allocation.exception.OfferServiceException;
 import com.safeway.app.emju.allocation.requestidentification.model.ProfileIdentifiers;
 import com.safeway.app.emju.allocation.requestidentification.parser.ConsumerRequestParser;
-import com.safeway.app.emju.cache.RedisCacheManager;
 import com.safeway.app.emju.cache.StoreCache;
 import com.safeway.app.emju.cache.entity.Store;
 import com.safeway.app.emju.dao.connector.CassandraConnector;
@@ -82,8 +81,6 @@ public class PurchaseHistoryControllerTest {
    // private static FakeApplication fakeApp;
 	
     private static CassandraConnector cassandraConn;
-    
-    private static RedisCacheManager redisCache;
     
     private static FakeApplication fakeApp;
     
