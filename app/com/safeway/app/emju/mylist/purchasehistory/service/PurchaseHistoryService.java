@@ -58,6 +58,7 @@ import com.safeway.app.emju.exception.FaultCodeBase;
 import com.safeway.app.emju.helper.DataHelper;
 import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
+import com.safeway.app.emju.mylist.helper.ExecutionContextHelper;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.purchasehistory.comparators.AlphaComparator;
 import com.safeway.app.emju.mylist.purchasehistory.comparators.CategoryComparator;
@@ -75,6 +76,7 @@ import play.Configuration;
 import play.Play;
 import play.libs.Akka;
 import play.libs.F.Promise;
+import scala.concurrent.ExecutionContext;
 
 /**
  *
@@ -85,7 +87,7 @@ public class PurchaseHistoryService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(PurchaseHistoryService.class);
 
-
+    private static final long PROMISE_TIMEOUT_MS = 500L;
     private PurchasedItemDAO purchasedItemDAO;
     private PartnerAllocationService partnerAllocationService;
     private ClubPriceDAO clubPriceDAO;
@@ -320,7 +322,8 @@ public class PurchaseHistoryService {
     private Map<Long, List<AllocatedOffer>> populateRelatedOffers(final ClientRequest purchaseHistoryRequest,
         final Map<Long, RetailScanOffer> retailScanOffersMap, final Map<String, MyListItemStatus> ycsUPCListItemStatus)
             throws OfferServiceException, CacheAccessException {
-
+    	ExecutionContext daoContext = ExecutionContextHelper.getContext("play.akka.actor.dao-context");
+    	
         LOGGER.debug("@@PurchaseHistoryServiceImpl.populateRelatedOffers@@ ");
 
         // get all the retailScanCds as a list
@@ -377,12 +380,20 @@ public class PurchaseHistoryService {
             purchaseHistoryRequest.getCustomerGUID(), purchaseHistoryRequest.getHouseholdId(),
             Lists.newArrayList(offerIds), OfferProgram.PD, OfferProgram.MF, OfferProgram.SC);
         
-
+        LOGGER.debug("populateRelatedOffers - listStatus promise storeid -> "+purchaseHistoryRequest.getStoreId());
+        
+        //ListStatus
+        Promise<Map<String, MyListItemStatus>> listStatusPromise =
+				offerStatusService.findMyListItemsAsync(daoContext, purchaseHistoryRequest.getCustomerGUID(), 
+						purchaseHistoryRequest.getHouseholdId(), purchaseHistoryRequest.getStoreId(), 
+						OfferProgram.PD);
+        
+        Map<String, MyListItemStatus> offerListStatusMap = listStatusPromise.get(PROMISE_TIMEOUT_MS);
 		
 
         return processRelatedOffers(purchaseHistoryRequest, retailScanOffersMap.values(), ycsOfferItems,
             redeemedOfferList, offerClipListStatusMap, pdCustomOfferMap, offerStorePriceMap, ccAllocatedOfferMap,
-            partnerAllocationList, ycsUPCListItemStatus);
+            partnerAllocationList, ycsUPCListItemStatus, offerListStatusMap);
 
     }
     
@@ -431,10 +442,14 @@ public class PurchaseHistoryService {
         final List<Long> redeemedOfferList, final Map<Long, OfferClipStatus> offerClipListStatusMap,
         final Map<Long, PDCustomOffer> pdCustomOfferMap, final Map<Long, OfferStorePrice> offerStorePriceMap,
         final Map<Long, CCAllocatedOffer> ccAllocatedOfferMap, final List<Long> catalinaAllocationOffers,
-        final Map<String, MyListItemStatus> ycsUPCListItemStatus) throws CacheAccessException, OfferServiceException {
-
+        final Map<String, MyListItemStatus> ycsUPCListItemStatus,
+        final Map<String, MyListItemStatus> offerListStatusMap) throws CacheAccessException, OfferServiceException {
+    	
         LOGGER.debug("@@PurchaseHistoryServiceImpl.processRelatedOffers@@ ");
-
+        
+        MyListItemStatus offerListStatus = null;
+        String listStatus = null;
+        
         // Get the each OfferIdList from retailScanOffer and create an aggregated array and send to the cache for
         // fetching to avoid the performance delays.
         // If the offerId is in redeemedOfferIdList, discard
@@ -485,7 +500,12 @@ public class PurchaseHistoryService {
 	                offerRefId = offerDetail.getOfferProgramCd()+"~"+offerId;
 	                // Get OfferClipStatus for the offer
 	                OfferClipStatus offerClipStatus = offerClipListStatusMap.get(offerId);
-	
+	                //Get List Status of the offer
+	                offerListStatus = offerListStatusMap.get(offerRefId);
+	                
+	                listStatus = offerListStatus != null && offerListStatus.getDeleteTs() == null ? 
+	                		ClipStatus.ADDED_TO_LIST : ClipStatus.UNCLIPPED;
+	                LOGGER.debug("processRelatedOffers --> list status: "+listStatus);
 	
 	                AllocatedOffer allocatedOffer = null;
 	
@@ -498,7 +518,7 @@ public class PurchaseHistoryService {
 	                
 	                LOGGER.debug(">>> pdOffer >>  " + pdOffer);
 	                LOGGER.debug(">>> pdCustomOfferMap.containsKey(offerId >>  " + pdCustomOfferMap.containsKey(offerId));
-	
+	                
 	                // if cc offer and the offerId is in ccAllocatedOfferMap
 	                if (ccOffer && ccAllocatedOfferMap.containsKey(offerId)) {
 	
@@ -510,21 +530,20 @@ public class PurchaseHistoryService {
 	                    allocatedOffer = pdOfferMapper.mapOffer(offerDetail, offerStorePriceMap.get(offerId),
 	                        offerClipStatus, purchaseHistoryRequest.getTimezone());
 	                }
-	
+	                
+	                
 	                if (allocatedOffer != null) {
+	                	allocatedOffer.setListStatus(listStatus);
 	                    relatedOffers.add(allocatedOffer);
 	                }
 	
 	            } // End of related offers
             }
             
-            
-            
-
             retailScanRelatedOffersMap.put(retailScanOffer.getRetailScanCd(), relatedOffers);
 
         } // end of retail scan
-
+        
         return retailScanRelatedOffersMap;
 
     }

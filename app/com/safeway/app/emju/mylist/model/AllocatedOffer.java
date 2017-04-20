@@ -52,7 +52,14 @@ public class AllocatedOffer {
     private String disclaimer;
     private Long displayRank;
     private boolean defaultAllocation;
+    private String listStatus = "U";
     
+	public String getListStatus() {
+		return listStatus;
+	}
+	public void setListStatus(String listStatus) {
+		this.listStatus = listStatus;
+	}
 	public Long getOfferId() {
 		return offerId;
 	}
