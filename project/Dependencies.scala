@@ -5,17 +5,17 @@ import _root_.play.sbt.Play.autoImport._
 object Dependencies {
 
   object cassandra {
-    val all  		= "org.apache.cassandra" % "cassandra-all" % "3.1"
-    val core  		= "com.datastax.cassandra" % "cassandra-driver-core" % "3.1.0"
-    val mapping    	= "com.datastax.cassandra" % "cassandra-driver-mapping" % "3.1.0"
+    val all  		= "org.apache.cassandra" % "cassandra-all" % "2.2.1"
+    val core  		= "com.datastax.cassandra" % "cassandra-driver-core" % "2.1.7.1"
+    val mapping    	= "com.datastax.cassandra" % "cassandra-driver-mapping" % "2.1.7.1"
     val test    	= "org.cassandraunit" % "cassandra-unit-shaded" % "2.1.9.2" % "test"
     val yaml		= "org.yaml" % "snakeyaml" % "1.15" % "test"
     val hector		= "org.hectorclient" % "hector-core" % "2.0-0" % "test"
   }
   
   object emju {
-    val common		= "emju-common" % "emju-common_2.11" % "2.18.0"
-    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.18.0"
+    val common		= "emju-common" % "emju-common_2.11" % "2.18.0.1"
+    val allocation	= "emju-allocation" % "emju-allocation_2.11" % "2.18.0.1"
   }
 
   val json		= "com.fasterxml.jackson.core" % "jackson-core" % "2.6.1"
