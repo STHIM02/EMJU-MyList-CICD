@@ -5,7 +5,7 @@ import _root_.play.sbt.Play.autoImport._
 object Dependencies {
 
   object cassandra {
-    val all  		= "org.apache.cassandra" % "cassandra-all" % "3.1"
+    val all  		= "org.apache.cassandra" % "cassandra-all" % "2.2.1"
     val core  		= "com.datastax.cassandra" % "cassandra-driver-core" % "3.1.0"
     val mapping    	= "com.datastax.cassandra" % "cassandra-driver-mapping" % "3.1.0"
     val test    	= "org.cassandraunit" % "cassandra-unit-shaded" % "2.1.9.2" % "test"
