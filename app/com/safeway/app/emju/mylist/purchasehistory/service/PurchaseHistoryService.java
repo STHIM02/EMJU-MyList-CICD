@@ -386,7 +386,7 @@ public class PurchaseHistoryService {
         Promise<Map<String, MyListItemStatus>> listStatusPromise =
 				offerStatusService.findMyListItemsAsync(daoContext, purchaseHistoryRequest.getCustomerGUID(), 
 						purchaseHistoryRequest.getHouseholdId(), purchaseHistoryRequest.getStoreId(), 
-						OfferProgram.PD);
+						OfferProgram.PD,  OfferProgram.MF, OfferProgram.SC);
         
         Map<String, MyListItemStatus> offerListStatusMap = listStatusPromise.get(PROMISE_TIMEOUT_MS);
 		
