@@ -9,8 +9,8 @@ ShoppingListController
              rog_cd, division_nm, capture_dt, timezone_nm FROM emju.store WHERE store_id = :storeId")
 ——validateStoreInRequest
 ————storeCache.getStoreDetailsById(Integer.parseInt(storeId))
-———————SELECT store_id, price_zone_id, banner_nm, address_line_1, address_line_2, city, state, country, postal_cd, region_id, rog_cd,
-       division_nm, capture_dt, timezone_nm FROM emju.store WHERE store_id = :storeId
+———————SELECT store_id, price_zone_id, banner_nm, address_line_1, address_line_2, city, state, country, postal_cd, region_id,
+       rog_cd, division_nm, capture_dt, timezone_nm FROM emju.store WHERE store_id = :storeId
 ——offerStatusService.findRedeemedOffersForRemoval(houseHoldId)
 ————-"SELECT offer_id FROM emju.household_redeemed_offer_nodisplay WHERE household_id = :householdId"
 ——shoppingListDAO.getShoppingListItems(shoppingListVO)
@@ -39,11 +39,11 @@ ShoppingListController
 ———————————————serviceClient.getCouponsIncAllocatedOffers(householdId, cardNbr)
 ———————————————offerCache.getOfferDetailsByAggregatorId(aggregatorOfferId, ServiceProvider.COUPONSINC)
 ————————————cacheCCVendorAllocation(vendorOffers)
-———————————————vendorAllocation.forEach((final CCPartnerOffer offer) -> {   batch.add(mapper.saveQuery(offer, TIME_TO_LIVE));   });
+———————————————vendorAllocation.forEach((final CCPartnerOffer o) -> { batch.add(mapper.saveQuery(o, TIME_TO_LIVE)); });
 ———————getYCSOffers
 ————————————purchasedItemDAO.findItemsByHHIdAndScanCode(householdId, upcList)
 ———————————————controlTblLocator.findByControlTableId(ControlTableLocator.PURCHASE_HISTORY)
-———————————————QueryBuilder.select().from(table).where(eq("household_id", bindMarker())).and(in("retail_scan_cd", bindMarker()))
+———————————————select * from table where household_id=? and retail_scan_cd in ?
 ————————————clubPriceDao.findItemPrices(timeZone, storeId, retailScanCds)
 ———————————————controlTableLocator.findByControlTableId(ControlTableLocator.STORE_CLUB_PRICE)
 ———————————————select from table where store_id = ? and retail_scan_cd= ? and effective_start_dt <= ?
