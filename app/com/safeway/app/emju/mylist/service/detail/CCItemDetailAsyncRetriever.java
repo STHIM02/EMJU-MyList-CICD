@@ -76,12 +76,19 @@ public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever
 		
 		LOGGER.info("CCDetailsProvider before finding ccAllocations>>" + lookupOfferIds.size());
 		String storeIdAsPostalCd = convertStoreIdAsPostalCd(Integer.parseInt(shoppingListVO.getHeaderVO().getParamStoreId()));
+		LOGGER.debug("storeIdAsPostalCd = " + storeIdAsPostalCd);
 		Map<Long, CCAllocatedOffer> allocatedOffersPostalOnly = 
 				ccAllocationDAO.findCCAllocation(postalCode);
 		Map<Long, CCAllocatedOffer> allocatedOffersStoreOnly = new HashMap<Long, CCAllocatedOffer>();
 		if (ValidationHelper.isNumber(storeIdAsPostalCd)) {
 			allocatedOffersStoreOnly = ccAllocationDAO.findCCAllocation(storeIdAsPostalCd);
 		}
+		
+		LOGGER.debug("Content of allocatedOffersPostalOnly...");
+		allocatedOffersPostalOnly.forEach((k,v)->LOGGER.debug("Key : " + k + " Value : " + v));
+		
+		LOGGER.debug("Content of allocatedOffersStoreOnly...");
+		allocatedOffersStoreOnly.forEach((k,v)->LOGGER.debug("Key : " + k + " Value : " + v));
 		
 		Map<Long, CCAllocatedOffer> allocatedOffers = new HashMap<Long, CCAllocatedOffer>();
 		allocatedOffers.putAll(allocatedOffersPostalOnly);
