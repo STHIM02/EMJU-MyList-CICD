@@ -80,9 +80,7 @@ public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever
 		Map<Long, CCAllocatedOffer> allocatedOffersPostalOnly = 
 				ccAllocationDAO.findCCAllocation(postalCode);
 		Map<Long, CCAllocatedOffer> allocatedOffersStoreOnly = new HashMap<Long, CCAllocatedOffer>();
-		if (ValidationHelper.isNumber(storeIdAsPostalCd)) {
-			allocatedOffersStoreOnly = ccAllocationDAO.findCCAllocation(storeIdAsPostalCd);
-		}
+		allocatedOffersStoreOnly = ccAllocationDAO.findCCAllocation(storeIdAsPostalCd);
 		
 		LOGGER.debug("Content of allocatedOffersPostalOnly...");
 		allocatedOffersPostalOnly.forEach((k,v)->LOGGER.debug("Key : " + k + " Value : " + v));
