@@ -73,8 +73,14 @@ public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever
 		}
 		
 		LOGGER.info("CCDetailsProvider before finding ccAllocations>>" + lookupOfferIds.size());
-		Map<Long, CCAllocatedOffer> allocatedOffers = 
+		Map<Long, CCAllocatedOffer> allocatedOffersPostalOnly = 
 				ccAllocationDAO.findCCAllocation(postalCode);
+		Map<Long, CCAllocatedOffer> allocatedOffersStoreOnly = 
+				ccAllocationDAO.findCCAllocation(postalCode);
+		Map<Long, CCAllocatedOffer> allocatedOffers = new HashMap<Long, CCAllocatedOffer>();
+		allocatedOffers.putAll(allocatedOffersPostalOnly);
+		allocatedOffers.putAll(allocatedOffersStoreOnly);
+		
 		LOGGER.info("CCDetailsProvider after finding ccAllocations>>" + allocatedOffers.size());
 		
 		for(Entry<Long, CCAllocatedOffer> entry : allocatedOffers.entrySet()) {
