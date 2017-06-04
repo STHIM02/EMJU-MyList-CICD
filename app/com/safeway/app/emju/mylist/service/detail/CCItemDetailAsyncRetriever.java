@@ -70,7 +70,7 @@ public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever
 		String postalCode = shoppingListVO.getHeaderVO().getPreferredStore().getPostalCode();
 		
 		for (Entry<String, ShoppingListItem> entry : itemMap.entrySet()) {
-
+			LOGGER.debug("lookupOfferIds ==> " + entry.getKey());
 			lookupOfferIds.add(Long.parseLong(entry.getKey()));
 		}
 		

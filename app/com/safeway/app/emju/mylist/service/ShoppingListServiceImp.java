@@ -438,7 +438,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			currentTime = new Timestamp(System.currentTimeMillis());
 			
 			for (ShoppingListItem shoppingListItem : shoppingListItems) {
-
+				LOGGER.debug("processShoppingList ==> " + shoppingListItem.getItemTypeCd() + shoppingListItem.getItemId());
 				canBeProcess = false;
 				itemTypeCd = shoppingListItem.getItemTypeCd();
 				itemTypeCd = itemTypeCd.equals("MF") || itemTypeCd.equals("SC")
