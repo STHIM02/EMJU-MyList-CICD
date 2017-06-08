@@ -47,6 +47,7 @@ import com.safeway.app.emju.helper.ValidationHelper;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
 import com.safeway.app.emju.mylist.helper.PDPricing;
 import com.safeway.app.emju.mylist.helper.PDPricingHelper;
+import com.safeway.app.emju.mylist.helper.Utils;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.model.HeaderVO;
 import com.safeway.app.emju.mylist.model.PreferredStore;
@@ -70,7 +71,6 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 	Configuration config = Play.application().configuration();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MatchOfferServiceImp.class);
-	private static final String STORE_ID_PREFIX = "S";
 	
 	@Inject
 	public MatchOfferServiceImp(PurchasedItemDAO purchasedItemDAO, ClubPriceDAO clubPriceDao,
@@ -322,7 +322,7 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 		
 		String storeIdAsPostalCd = "";
 		if(null != storeId) 
-			storeIdAsPostalCd = convertStoreIdAsPostalCd(storeId);
+			storeIdAsPostalCd = Utils.convertStoreIdAsPostalCd(storeId);
 		LOGGER.debug("storeIdAsPostalCd = " + storeIdAsPostalCd);
 		Map<Long, CCAllocatedOffer> allocatedOffersPostalOnly = 
 				ccAllocationDAO.findCCAllocation(zipCode, offerList);
@@ -668,21 +668,6 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
         
         return partnerAllocationList;
 
-	}
-	
-	private static String convertStoreIdAsPostalCd(Integer storeId) {
-		String result = STORE_ID_PREFIX;
-		
-		if(0 >= storeId && 10 > storeId) {
-			result = result + "000";
-		} else if(10 >= storeId && 1000 > storeId) {
-			result = result + "00";
-		} else if(100 >= storeId && 1000 > storeId) {
-			result = result + "0";
-		} 
-		
-		result = result + storeId.toString();
-		return result;
 	}
 
 }

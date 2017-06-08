@@ -59,6 +59,7 @@ import com.safeway.app.emju.helper.DataHelper;
 import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.helper.ExecutionContextHelper;
+import com.safeway.app.emju.mylist.helper.Utils;
 import com.safeway.app.emju.mylist.model.AllocatedOffer;
 import com.safeway.app.emju.mylist.purchasehistory.comparators.AlphaComparator;
 import com.safeway.app.emju.mylist.purchasehistory.comparators.CategoryComparator;
@@ -109,7 +110,6 @@ public class PurchaseHistoryService {
     private static final String SORT_TYPE_ALPHA = "az";
     private static final String SORT_TYPE_ALPHA_REVERSE = "za";
     private static final String SORT_TYPE_RECENCY = "purchaseRecency";
-    private static final String STORE_ID_PREFIX = "S";
 
     String[] OFFER_TYPES = { OfferProgram.PD, OfferProgram.SC, OfferProgram.MF };
     
@@ -647,7 +647,7 @@ public class PurchaseHistoryService {
     	
     	String storeIdAsPostalCd = "";
 		if(null != purchaseHistoryRequest.getStoreId())
-			storeIdAsPostalCd = convertStoreIdAsPostalCd(purchaseHistoryRequest.getStoreId());
+			storeIdAsPostalCd = Utils.convertStoreIdAsPostalCd(purchaseHistoryRequest.getStoreId());
 		LOGGER.debug("storeIdAsPostalCd = " + storeIdAsPostalCd);
 		Map<Long, CCAllocatedOffer> allocatedOffersPostalOnly = 
 				cCAllocationDAO.findCCAllocation(purchaseHistoryRequest.getPostalCode());
@@ -833,20 +833,5 @@ public class PurchaseHistoryService {
             items.get(i).setAlphaRank((long) i);
         }
     }
-    
-    private static String convertStoreIdAsPostalCd(Integer storeId) {
-		String result = STORE_ID_PREFIX;
-		
-		if(0 >= storeId && 10 > storeId) {
-			result = result + "000";
-		} else if(10 >= storeId && 1000 > storeId) {
-			result = result + "00";
-		} else if(100 >= storeId && 1000 > storeId) {
-			result = result + "0";
-		} 
-		
-		result = result + storeId.toString();
-		return result;
-	}
 
 }

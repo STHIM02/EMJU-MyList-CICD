@@ -16,6 +16,7 @@ import com.safeway.app.emju.helper.ValidationHelper;
 import com.safeway.app.emju.logging.Logger;
 import com.safeway.app.emju.logging.LoggerFactory;
 import com.safeway.app.emju.mylist.entity.ShoppingListItem;
+import com.safeway.app.emju.mylist.helper.Utils;
 import com.safeway.app.emju.mylist.model.ShoppingListVO;
 
 import play.libs.Akka;
@@ -27,7 +28,6 @@ import scala.concurrent.ExecutionContext;
 public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever<OfferDetail> {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CCItemDetailAsyncRetriever.class);
-	private static final String STORE_ID_PREFIX = "S";
 	
 	private OfferDetailCache offerCache;
 	private CCAllocationDAO ccAllocationDAO;
@@ -77,7 +77,7 @@ public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever
 		LOGGER.info("CCDetailsProvider before finding ccAllocations>>" + lookupOfferIds.size());
 		String storeIdAsPostalCd = "";
 		if(null != shoppingListVO.getHeaderVO().getParamStoreId())
-			storeIdAsPostalCd = convertStoreIdAsPostalCd(Integer.parseInt(shoppingListVO.getHeaderVO().getParamStoreId()));
+			storeIdAsPostalCd = Utils.convertStoreIdAsPostalCd(Integer.parseInt(shoppingListVO.getHeaderVO().getParamStoreId()));
 		LOGGER.debug("storeIdAsPostalCd = " + storeIdAsPostalCd);
 		Map<Long, CCAllocatedOffer> allocatedOffersPostalOnly = 
 				ccAllocationDAO.findCCAllocation(postalCode);
@@ -105,21 +105,6 @@ public class CCItemDetailAsyncRetriever extends AbstractItemDetailAsyncRetriever
 		offerDetailMap = offerCache.getOfferDetailsByIds(validOfferIdsArray);
 		LOGGER.debug("OfferDetailMap size being returned: " + offerDetailMap.size());
 		return offerDetailMap;
-	}
-	
-	private static String convertStoreIdAsPostalCd(Integer storeId) {
-		String result = STORE_ID_PREFIX;
-		
-		if(0 >= storeId && 10 > storeId) {
-			result = result + "000";
-		} else if(10 >= storeId && 1000 > storeId) {
-			result = result + "00";
-		} else if(100 >= storeId && 1000 > storeId) {
-			result = result + "0";
-		} 
-		
-		result = result + storeId.toString();
-		return result;
 	}
 
 }
