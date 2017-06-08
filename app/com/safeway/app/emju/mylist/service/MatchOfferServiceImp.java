@@ -70,7 +70,8 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 	Configuration config = Play.application().configuration();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MatchOfferServiceImp.class);
-
+	private static final String STORE_ID_PREFIX = "S";
+	
 	@Inject
 	public MatchOfferServiceImp(PurchasedItemDAO purchasedItemDAO, ClubPriceDAO clubPriceDao,
 			OfferStatusService offerStatusService, RetailScanCache retailScanCache, 
@@ -242,7 +243,7 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 	            LOGGER.error("Unable to retrieve Partner Allocation within 1 second", e);
 	        }
 			LOGGER.debug("MatchOfferServiceImp before retrieving cc allocation");
-			ccOffers = getCCOffers(currentClientDt, zipCode, relatedOfferIds, partnerAllocation);
+			ccOffers = getCCOffers(currentClientDt, zipCode, storeId, relatedOfferIds, partnerAllocation);
 			LOGGER.debug("MatchOfferServiceImp after retrieving cc allocation");
 
 			result = generateUPCOffersMap(itemsMap, result, ycsOffers, offerUPCMap, "YCS");
@@ -310,7 +311,7 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 
 	}
 
-	private Map<Long, AllocatedOffer> getCCOffers(Date currentDt, String zipCode, 
+	private Map<Long, AllocatedOffer> getCCOffers(Date currentDt, String zipCode, Integer storeId,
 			List<Long> offerList, List<Long> partnerAllocation) throws ApplicationException {
 
 		LOGGER.debug("MatchOfferServiceImp --> getCCOffers");
@@ -318,7 +319,22 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
 
 		Map<Long, OfferDetail> offerDetailMap = new HashMap<Long, OfferDetail>();
 		LOGGER.debug("MatchOfferServiceImp --> getCCOffers. Retrieving allocated Offers");
-		Map<Long, CCAllocatedOffer> ccOffers = ccAllocationDAO.findCCAllocation(zipCode, offerList);
+		
+		String storeIdAsPostalCd = "";
+		if(null != storeId) 
+			storeIdAsPostalCd = convertStoreIdAsPostalCd(storeId);
+		LOGGER.debug("storeIdAsPostalCd = " + storeIdAsPostalCd);
+		Map<Long, CCAllocatedOffer> allocatedOffersPostalOnly = 
+				ccAllocationDAO.findCCAllocation(zipCode, offerList);
+		Map<Long, CCAllocatedOffer> allocatedOffersStoreOnly = new HashMap<Long, CCAllocatedOffer>();
+		if(!"".equalsIgnoreCase(storeIdAsPostalCd))
+			allocatedOffersStoreOnly = ccAllocationDAO.findCCAllocation(storeIdAsPostalCd, offerList);
+		
+		Map<Long, CCAllocatedOffer> ccOffers = new HashMap<Long, CCAllocatedOffer>();
+		ccOffers.putAll(allocatedOffersPostalOnly);
+		ccOffers.putAll(allocatedOffersStoreOnly);
+		
+		//Map<Long, CCAllocatedOffer> ccOffers = ccAllocationDAO.findCCAllocation(zipCode, offerList);
 
 		List<Long> validOfferIds = new ArrayList<Long>();
 		validOfferIds.addAll(ccOffers.keySet());
@@ -652,6 +668,21 @@ public class MatchOfferServiceImp implements MatchOfferSevice {
         
         return partnerAllocationList;
 
+	}
+	
+	private static String convertStoreIdAsPostalCd(Integer storeId) {
+		String result = STORE_ID_PREFIX;
+		
+		if(0 >= storeId && 10 > storeId) {
+			result = result + "000";
+		} else if(10 >= storeId && 1000 > storeId) {
+			result = result + "00";
+		} else if(100 >= storeId && 1000 > storeId) {
+			result = result + "0";
+		} 
+		
+		result = result + storeId.toString();
+		return result;
 	}
 
 }
