@@ -35,7 +35,7 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
 
     private CassandraConnector connector;
     
-    private static final int QUERY_THRESHOLD_IN_MS = 100;
+    private static final int QUERY_THRESHOLD_IN_MS = 25;
     
     private static java.util.Date _lastLoggedTime = null;
     private static final int MINIMAL_LOGGING_THRESHOLD_IN_MS = 300000; //five minutes
