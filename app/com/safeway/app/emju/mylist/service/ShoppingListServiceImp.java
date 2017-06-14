@@ -153,6 +153,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			Map<String, Integer> logMap = new HashMap<String, Integer>();
 
 			if (!filterAllItems) {
+				// FIXIT: why is being called when storeCache.getStoreDetailsById is there.
 				if (ValidationHelper.isNonEmpty(ycsStoreId)) {
 					ycsStoreId = validateStoreInRequest(ycsStoreId);
 				} else {
@@ -438,7 +439,7 @@ public class ShoppingListServiceImp implements ShoppingListService {
 			currentTime = new Timestamp(System.currentTimeMillis());
 			
 			for (ShoppingListItem shoppingListItem : shoppingListItems) {
-
+				LOGGER.debug("processShoppingList ==> " + shoppingListItem.getItemTypeCd() + shoppingListItem.getItemId());
 				canBeProcess = false;
 				itemTypeCd = shoppingListItem.getItemTypeCd();
 				itemTypeCd = itemTypeCd.equals("MF") || itemTypeCd.equals("SC")
