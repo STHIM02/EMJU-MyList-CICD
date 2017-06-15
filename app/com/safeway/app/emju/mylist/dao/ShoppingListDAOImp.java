@@ -1,15 +1,11 @@
 package com.safeway.app.emju.mylist.dao;
 
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.ExecutionInfo;
-import com.datastax.driver.core.QueryTrace;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.mapping.Mapper;
@@ -35,11 +31,7 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
 
     private CassandraConnector connector;
     
-    private static final int QUERY_THRESHOLD_IN_MS = 25;
-    
-    private static java.util.Date _lastLoggedTime = null;
-    private static final int MINIMAL_LOGGING_THRESHOLD_IN_MS = 300000; //five minutes
-    
+    private static Date lastLoggedTime = new Date();
     
     @Inject
     public ShoppingListDAOImp(CassandraConnector connector) {
@@ -75,7 +67,7 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
 					"householdId " + householdId + ", shoppingListNm " + shoppingListNm);
             ResultSet rs = connector.getSession().execute(boundStatement.bind(custGUID, householdId, shoppingListNm));
             long elapsed = System.currentTimeMillis() - startTime;
-            logTracing(startTime, elapsed, rs, sql);
+            CassandraConnector.logTracing(startTime, elapsed, rs, sql, lastLoggedTime);
             
             Result<ShoppingListItem> result = connector.getMappingManager().mapper(ShoppingListItem.class).map(rs);
 			
@@ -121,46 +113,4 @@ public class ShoppingListDAOImp implements ShoppingListDAO {
 		
 	}
 	
-    private void logTracing(long startTime, long  elapsed, ResultSet result, String str) {
-        boolean isQueryThresholdExceeded = (elapsed > QUERY_THRESHOLD_IN_MS);
-        
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(_lastLoggedTime);
-        calendar.add(Calendar.MILLISECOND, MINIMAL_LOGGING_THRESHOLD_IN_MS);
-        boolean isMinimalLoggingThresholdExceeded = (startTime > calendar.getTimeInMillis());
-        
-        if (isQueryThresholdExceeded || isMinimalLoggingThresholdExceeded) {
-            ExecutionInfo executionInfo = result.getExecutionInfo();
- 
-            QueryTrace queryTrace = executionInfo.getQueryTrace();
- 
-            //you can use the traceid value to lookup info in the cluster (see example output below class:
-            // select * from system_traces.sessions where session_id = {trace id value};
-            // select * from system_traces.events where session_id = {trace id value};
-            
-            StringBuilder sb = new StringBuilder();
-            sb.append(str).append("                            \n");
-            sb.append("Trace ID: " + queryTrace.getTraceId()).append("                       \n");
- 
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-            
-            
-            for (QueryTrace.Event event : queryTrace.getEvents()){
-            	sb.append(MessageFormat.format(
-                        "time: %s; host: %s; elapsed (usec): %d; description: %s",
-                        sdf.format(event.getTimestamp()),
-                        event.getSource(),
-                        event.getSourceElapsedMicros(),
-                        event.getDescription()
-                ));
-            	sb.append("                       \n");
-            }
- 
-            LOGGER.error(sb.toString());
-            
-            //keep track of the fact that we just logged a trace so that we don't immediately do it again on the next request
-            _lastLoggedTime.setTime(startTime);
-        }
-    }
-
 }
