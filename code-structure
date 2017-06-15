@@ -3,7 +3,7 @@ ShoppingListController
 ——setPreferredStoreInfo
 ————findPrimaryStore(householdID)
 ———————controlTableLocator.findByControlTableId(ControlTableLocator.HOUSEHOLD_STORE)
-———————select store_id from table where household_id = ?
+———————QueryBuilder.select("store_id").from(table).where(eq("household_id", bindMarker()))
 ————findStoreDetails(userStoreId, registeredZipCode)
 ——————— SELECT store_id, price_zone_id, banner_nm, address_line_1, address_line_2, city, state, country, postal_cd, region_id,
              rog_cd, division_nm, capture_dt, timezone_nm FROM emju.store WHERE store_id = :storeId")
