@@ -87,3 +87,4 @@ doc in Compile <<= target.map(_ / "none")
 // disable Akka checker in Dev mode
 PlayKeys.devSettings := Seq("akka.diagnostics.checker.enabled" -> "off")
 //commit for test-3
+//commit for test-4 dated 0719hrs 19-Jun 2017
