@@ -21,3 +21,5 @@ addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.3")
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 addSbtPlugin("de.johoop" % "jacoco4sbt" % "2.2.0")
+//Finbug plugin
+addSbtPlugin("de.johoop" % "findbugs4sbt" % "1.4.0")
