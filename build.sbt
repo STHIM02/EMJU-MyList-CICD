@@ -8,6 +8,9 @@ scalaVersion := "2.11.7"
 //Code Coverage via JaCoCo 
 jacoco.settings
 
+//Code Analysis via FindBugs
+findbugsSettings
+
 //*********CI build and release process start********************
 //customize release process using release plugin:
 //  commented out Git related steps
