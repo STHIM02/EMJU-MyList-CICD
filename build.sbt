@@ -1,6 +1,7 @@
 import Dependencies._
 import ReleaseTransformations._
 import de.johoop.findbugs4sbt.FindBugs._
+import de.johoop.findbugs4sbt._
 
 name := """emju-mylist"""
 resolvers += "EMJU repository" at "http://albertsons-binrepo.westus.cloudapp.azure.com/artifactory/libs-release-local/"
@@ -11,7 +12,7 @@ jacoco.settings
 
 //Code Analysis via FindBugs
 findbugsSettings
-findbugsClasspath := IO.listFiles(file(<\/project\/plugins.sbt>)).filter(_.getName.endsWith("jar")).toSeq.classpath
+//findbugsClasspath := IO.listFiles(file(<\/project\/plugins.sbt>)).filter(_.getName.endsWith("jar")).toSeq.classpath
 
 
 //*********CI build and release process start********************
