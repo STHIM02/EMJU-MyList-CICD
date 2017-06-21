@@ -1,6 +1,8 @@
 import sbt._
 import Keys._
 import _root_.play.sbt.Play.autoImport._
+import de.johoop.findbugs4sbt._
+import de.johoop.findbugs4sbt.FindBugs._
 
 object Dependencies {
 
