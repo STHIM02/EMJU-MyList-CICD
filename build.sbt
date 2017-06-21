@@ -1,5 +1,6 @@
 import Dependencies._
 import ReleaseTransformations._
+import de.johoop.findbugs4sbt.FindBugs._
 
 name := """emju-mylist"""
 resolvers += "EMJU repository" at "http://albertsons-binrepo.westus.cloudapp.azure.com/artifactory/libs-release-local/"
@@ -91,3 +92,4 @@ PlayKeys.devSettings := Seq("akka.diagnostics.checker.enabled" -> "off")
 //commit for test-5 dated 0930hrs 19-Jun 2017
 //commit for test-5 dated 1530hrs 19-Jun 2017
 //commit for test-5 dated 1545hrs 19-Jun 2017
+//commit for test 6 fro findbug
