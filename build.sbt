@@ -11,6 +11,8 @@ jacoco.settings
 
 //Code Analysis via FindBugs
 findbugsSettings
+findbugsClasspath := IO.listFiles(file(</project/plugins.sbt>)).filter(_.getName.endsWith("jar")).toSeq.classpath
+
 
 //*********CI build and release process start********************
 //customize release process using release plugin:
