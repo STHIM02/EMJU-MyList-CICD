@@ -73,6 +73,8 @@ credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 lazy val root = (
   project.in(file("."))
   enablePlugins(PlayJava)
+    settings = Defaults.defaultSettings //added
+      jacoco.settings ++ //this is the important part. 
 )
 
 libraryDependencies ++= webDependencies
