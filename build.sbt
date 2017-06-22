@@ -78,6 +78,7 @@ lazy val root = (
 )
 
 libraryDependencies ++= webDependencies
+libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test" //added
 
 // Play provides two styles of routers, one expects its actions to be injected, the
 // other, legacy style, accesses its actions statically.
